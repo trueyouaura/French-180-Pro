@@ -1,0 +1,2194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#3157d5">
+  <meta name="description" content="French 180 Pro: a 180-day adaptive, AuDHD-friendly French learning app.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>French 180 Pro 3.0.1</title>
+  <style>
+    :root {
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --card2:#f8faff;
+      --text:#172033;
+      --muted:#657086;
+      --accent:#3157d5;
+      --accent-soft:#e9eeff;
+      --border:#e0e5ef;
+      --good:#237a57;
+      --warn:#a06413;
+      --bad:#b34242;
+      --shadow:0 8px 24px rgba(25,37,66,.06);
+    }
+    [data-theme="dark"] {
+      --bg:#10141d;
+      --card:#171d29;
+      --card2:#1d2533;
+      --text:#edf1f8;
+      --muted:#a8b1c2;
+      --accent:#7f9cff;
+      --accent-soft:#24335f;
+      --border:#2b3547;
+      --good:#55b98c;
+      --warn:#e3ad5d;
+      --bad:#e47e7e;
+      --shadow:none;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);line-height:1.45}
+    button,input,textarea,select{font:inherit}
+    button{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;background:var(--accent);color:white}
+    button:hover{filter:brightness(.97)}
+    button.secondary{background:var(--accent-soft);color:var(--accent)}
+    button.good{background:var(--good)}
+    button.warn{background:var(--warn)}
+    button.bad{background:var(--bad)}
+    button.ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    input,textarea,select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text)}
+    textarea{min-height:120px;resize:vertical}
+    header{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--border)}
+    .top{max-width:1180px;margin:auto;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+    .brand h1{margin:0;font-size:24px}
+    .brand small{color:var(--muted)}
+    .stats{display:flex;gap:18px;flex-wrap:wrap}
+    .stat{font-size:12px;color:var(--muted)}
+    .stat strong{display:block;color:var(--text);font-size:20px}
+    nav{max-width:1180px;margin:auto;padding:0 18px 10px;display:flex;gap:8px;overflow:auto}
+    nav button{white-space:nowrap;background:transparent;color:var(--muted);padding:8px 10px}
+    nav button.active{background:var(--accent-soft);color:var(--accent)}
+    main{max-width:1180px;margin:22px auto;padding:0 16px 70px}
+    .view{display:none}.view.active{display:block}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+    .c12{grid-column:span 12}.c8{grid-column:span 8}.c6{grid-column:span 6}.c4{grid-column:span 4}
+    @media(max-width:850px){.c8,.c6,.c4{grid-column:span 12}.stats{gap:12px}}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+    .card h2,.card h3{margin-top:0}
+    .muted{color:var(--muted)}.small{font-size:13px}
+    .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .spread{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .pill{display:inline-block;padding:5px 9px;margin:2px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:700}
+    .progress{height:10px;border-radius:999px;background:var(--card2);overflow:hidden}
+    .progress>div{height:100%;background:var(--accent);transition:.25s}
+    .task{border:1px solid var(--border);border-radius:12px;padding:12px;margin:9px 0;background:var(--card2)}
+    .task strong{display:block}
+    .phrase{font-size:22px;font-weight:800}
+    .translation{color:var(--muted);margin-top:4px}
+    .flash{min-height:220px;border:2px dashed var(--border);border-radius:16px;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;cursor:pointer}
+    .flash .fr{font-size:30px;font-weight:850}
+    .flash .en{font-size:18px;color:var(--muted);display:none;margin-top:8px}
+    .flash.revealed .en{display:block}
+    .srs-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+    @media(max-width:560px){.srs-buttons{grid-template-columns:repeat(2,1fr)}}
+    .quiz-option{display:block;width:100%;text-align:left;margin:8px 0;background:var(--card2);color:var(--text);border:1px solid var(--border)}
+    .quiz-option.correct{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--card))}
+    .quiz-option.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--card))}
+    .meter{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .metric{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px}
+    .metric b{display:block;font-size:22px}
+    @media(max-width:600px){.meter{grid-template-columns:repeat(2,1fr)}}
+    .reading{font-size:18px;line-height:1.75;padding:14px;border-left:4px solid var(--accent);background:var(--card2);border-radius:0 12px 12px 0}
+    .notice{padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--card2)}
+    .weak-word{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+    .weak-word:last-child{border-bottom:0}
+    .score{font-size:42px;font-weight:900}
+    .hidden{display:none!important}
+    .success{color:var(--good)}.danger{color:var(--bad)}.warning{color:var(--warn)}
+    .divider{height:1px;background:var(--border);margin:16px 0}
+    details{border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin:8px 0;background:var(--card2)}
+    summary{cursor:pointer;font-weight:700}
+    code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+
+    /* V3.0 cognitive-accessibility / AuDHD-friendly controls */
+    :root{--font-scale:1;--line-height:1.48;--focus-ring:0 0 0 3px color-mix(in srgb,var(--accent) 32%,transparent)}
+    body{font-size:calc(16px * var(--font-scale));line-height:var(--line-height)}
+    button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+    [data-theme="calm"]{--bg:#f2f5f0;--card:#fbfcfa;--card2:#f0f4ee;--text:#1f2c28;--muted:#66756f;--accent:#3f6f65;--accent-soft:#e0ece8;--border:#d3ddd8;--good:#3d755b;--warn:#916b2e;--bad:#9b5151;--shadow:none}
+    [data-contrast="high"]{--bg:#fff;--card:#fff;--card2:#f5f5f5;--text:#000;--muted:#333;--accent:#0037b3;--accent-soft:#dbe6ff;--border:#111;--good:#006b35;--warn:#7a4a00;--bad:#a00000;--shadow:none}
+    [data-theme="dark"][data-contrast="high"]{--bg:#000;--card:#050505;--card2:#111;--text:#fff;--muted:#ddd;--accent:#9eb7ff;--accent-soft:#142652;--border:#fff;--good:#75e1a9;--warn:#ffd17f;--bad:#ff9a9a}
+    [data-reduced-motion="true"] *,[data-reduced-motion="true"] *::before,[data-reduced-motion="true"] *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+    [data-spacing="wide"]{--line-height:1.75}
+    [data-spacing="wide"] p,[data-spacing="wide"] .task,[data-spacing="wide"] .reading{letter-spacing:.015em;word-spacing:.05em}
+    .session-dock{background:linear-gradient(135deg,var(--card),var(--card2));border:2px solid var(--accent-soft)}
+    .choice-group{display:flex;gap:8px;flex-wrap:wrap}
+    .choice-group button{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+    .choice-group button.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .focus-panel{border:2px solid var(--accent);background:var(--card)}
+    .focus-step{font-size:24px;font-weight:850;margin:8px 0}
+    .focus-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    .timer{font-variant-numeric:tabular-nums;font-size:28px;font-weight:850;min-width:92px;text-align:center}
+    .reentry{border-left:4px solid var(--accent);padding:10px 12px;background:var(--card2);border-radius:0 10px 10px 0}
+    .mission-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    @media(max-width:850px){.mission-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:540px){.mission-grid{grid-template-columns:1fr}}
+    .mission-box{padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--card2)}
+    .mission-box strong{display:block;margin-bottom:4px}
+    .skillbar{margin:9px 0}
+    .skillbar .spread{font-size:13px}
+    .skillbar .progress{height:8px;margin-top:4px}
+    .word-diff{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .word-token{padding:3px 7px;border-radius:7px;background:var(--card2);border:1px solid var(--border)}
+    .word-token.ok{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--card))}
+    .word-token.miss{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--card))}
+    .pron-pair{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;margin:4px;border:1px solid var(--border);border-radius:10px;background:var(--card2)}
+    .assessment-q{padding:14px;border:1px solid var(--border);border-radius:12px;background:var(--card2)}
+    .assessment-domain{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:800}
+    .coach-rec{border-left:4px solid var(--good);padding-left:12px}
+    .low-stim nav{opacity:.68}
+    .low-stim .stats .stat:nth-child(3){display:none}
+    .low-stim .card{box-shadow:none}
+    body.focus-sprint header nav{display:none}
+    body.focus-sprint main>.view:not(.active){display:none}
+    .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+
+  </style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="brand">
+      <h1>French 180 Pro 3.0.1</h1>
+      <small>V3.0.1 • GitHub Pages • Adaptive French • AuDHD-friendly</small>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong id="statDay">1</strong>Day</div>
+      <div class="stat"><strong id="statStreak">0</strong><span id="statMomentumLabel">Momentum</span></div>
+      <div class="stat"><strong id="statXP">0</strong>XP</div>
+      <div class="stat"><strong id="statDue">0</strong>Due</div>
+    </div>
+  </div>
+  <nav>
+    <button class="active" data-view="today">Today</button>
+    <button data-view="review">Review</button>
+    <button data-view="mistakes">Mistakes</button>
+    <button data-view="practice">Practice</button>
+    <button data-view="progress">Progress</button>
+    <button data-view="assess">Assess</button>
+    <button data-view="settings">Settings</button>
+  </nav>
+</header>
+
+<main>
+  <section id="today" class="view active">
+    <div class="grid">
+      <div class="card c12">
+        <div class="spread">
+          <div>
+            <div class="row"><span class="pill" id="cefrPill"></span><span class="pill" id="unitPill"></span><span class="pill" id="dayTypePill"></span></div>
+            <h2 id="todayTitle" style="margin:8px 0 4px"></h2>
+            <div class="muted" id="todaySubtitle"></div>
+          </div>
+          <button class="secondary" onclick="speakText(currentPhrase()[0])">🔊 Daily phrase</button>
+        </div>
+        <div class="progress" style="margin-top:14px"><div id="courseProgress"></div></div>
+        <div class="small muted" id="courseProgressText" style="margin-top:6px"></div>
+      </div>
+
+
+      <div class="card c12 session-dock" id="sessionDock">
+        <div class="spread">
+          <div>
+            <div class="row"><span class="pill">AuDHD-friendly session</span><span class="pill" id="sessionEstimate">~25 min</span><span class="pill" id="adaptiveBandPill">Steady challenge</span></div>
+            <h2 style="margin:8px 0 4px">Choose the amount of French your brain has room for today</h2>
+            <p class="muted" style="margin:0">Changing the session size never counts as failure. The app keeps the learning goal and trims the workload.</p>
+          </div>
+          <button class="secondary" onclick="overwhelmedMode()">I'm overwhelmed → make it tiny</button>
+        </div>
+        <div class="grid" style="margin-top:14px">
+          <div class="c4">
+            <strong>Session size</strong>
+            <div class="choice-group" id="sessionModeChoices" style="margin-top:8px">
+              <button data-session="quick" onclick="setSessionMode('quick')">Quick 10</button>
+              <button data-session="standard" onclick="setSessionMode('standard')">Standard 25</button>
+              <button data-session="deep" onclick="setSessionMode('deep')">Deep 45</button>
+            </div>
+          </div>
+          <div class="c4">
+            <strong>Energy right now</strong>
+            <div class="choice-group" id="energyChoices" style="margin-top:8px">
+              <button data-energy="low" onclick="setEnergy('low')">Low</button>
+              <button data-energy="medium" onclick="setEnergy('medium')">Medium</button>
+              <button data-energy="high" onclick="setEnergy('high')">High</button>
+            </div>
+          </div>
+          <div class="c4">
+            <strong>Focus tools</strong>
+            <div class="row" style="margin-top:8px">
+              <button onclick="startFocusSprint()">Start Focus Sprint</button>
+              <button class="ghost" onclick="startTinyTask()">2-minute start</button>
+            </div>
+          </div>
+        </div>
+        <div class="reentry" id="reentryBox" style="margin-top:14px"></div>
+      </div>
+
+      <div class="card c12" id="dailyMissionCard">
+        <div class="spread">
+          <div><h2 style="margin-bottom:4px">Today's unique mission</h2><p class="muted" id="dailyMissionTitle" style="margin:0"></p></div>
+          <span class="pill" id="dailyLessonNumber">Day 1 / 180</span>
+        </div>
+        <div class="mission-grid" style="margin-top:12px">
+          <div class="mission-box"><strong>🎯 Goal</strong><span id="dailyGoal"></span></div>
+          <div class="mission-box"><strong>🧠 Retrieval</strong><span id="dailyRetrieval"></span></div>
+          <div class="mission-box"><strong>👂 Listening</strong><span id="dailyListeningMission"></span></div>
+          <div class="mission-box"><strong>🗣 Pronunciation</strong><span id="dailyPronMission"></span></div>
+        </div>
+      </div>
+
+      <div class="card c8" id="planCard">
+        <h2>Today's plan</h2>
+        <div id="taskList"></div>
+      </div>
+
+      <div class="card c4" id="phraseCard">
+        <h2>Daily phrase</h2>
+        <div class="phrase" id="dailyPhraseFr"></div>
+        <div class="translation" id="dailyPhraseEn"></div>
+        <div class="row" style="margin-top:12px">
+          <button onclick="speakText(currentPhrase()[0])">Hear it</button>
+          <button class="secondary" onclick="startSpeechCheck(currentPhrase()[0])">Say it</button>
+        </div>
+        <div id="speechFeedback" class="small" style="margin-top:10px"></div>
+      </div>
+
+      <div class="card c12 focus-panel hidden" id="focusSprintCard">
+        <div class="spread">
+          <div>
+            <div class="focus-meta"><span class="pill" id="focusStepCount"></span><span class="pill" id="focusTimeHint"></span></div>
+            <div class="focus-step" id="focusStepTitle"></div>
+            <div class="muted" id="focusStepDescription"></div>
+          </div>
+          <div class="timer" id="focusTimer">00:00</div>
+        </div>
+        <div class="progress" style="margin-top:14px"><div id="focusProgress"></div></div>
+        <div class="row" style="margin-top:12px">
+          <button onclick="focusGoToTask()">Go to this activity</button>
+          <button class="good" onclick="focusCompleteStep()">Done ✓</button>
+          <button class="secondary" onclick="focusSkipStep()">Skip without penalty</button>
+          <button class="ghost" onclick="closeFocusSprint()">Exit sprint</button>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <span class="small muted">Optional timer:</span>
+          <button class="ghost" onclick="startFocusTimer(5)">5m</button>
+          <button class="ghost" onclick="startFocusTimer(10)">10m</button>
+          <button class="ghost" onclick="startFocusTimer(15)">15m</button>
+          <button class="ghost" onclick="startFocusTimer(25)">25m</button>
+          <button class="ghost" onclick="pauseFocusTimer()">Pause</button>
+          <button class="ghost" onclick="resetFocusTimer()">Reset</button>
+        </div>
+      </div>
+
+      <div class="card c6" id="vocabCard">
+        <div class="spread">
+          <h2>New + due vocabulary</h2>
+          <div class="row"><span class="pill" id="cardModePill"></span><span class="small muted" id="cardCounter"></span></div>
+        </div>
+        <div id="todayFlash" class="flash" onclick="toggleFlash()">
+          <div><div class="fr" id="flashFr"></div><div class="en" id="flashEn"></div></div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="secondary" onclick="speakText(activeCard()?.front || '')">🔊 Pronounce</button>
+          <button class="ghost" onclick="toggleFlash()">Reveal</button>
+        </div>
+        <div class="srs-buttons">
+          <button class="bad" onclick="rateActive('again')">Again</button>
+          <button class="warn" onclick="rateActive('hard')">Hard</button>
+          <button class="good" onclick="rateActive('good')">Good</button>
+          <button onclick="rateActive('easy')">Easy</button>
+        </div>
+        <p class="small muted">Your rating changes when this card returns. Missed cards come back sooner.</p>
+      </div>
+
+      <div class="card c6" id="grammarCard">
+        <h2>Grammar focus</h2>
+        <h3 id="grammarTitle"></h3>
+        <p id="grammarText"></p>
+        <div id="grammarExamples"></div>
+        <div class="divider"></div>
+        <label><strong>Create your own sentence</strong></label>
+        <input id="grammarProduction" placeholder="Write one sentence using today's pattern">
+        <button style="margin-top:10px" onclick="saveGrammarProduction()">Save +5 XP</button>
+      </div>
+
+      <div class="card c6" id="listeningCard">
+        <h2>Listening & dictation</h2>
+        <p class="muted">Use the listening ladder: slow once if needed, then normal speed. Type exactly what you hear.</p>
+        <div class="row">
+          <button class="secondary" onclick="playListeningRate(0.68)">1. Slow</button>
+          <button onclick="playListeningRate(state.settings.rate||0.85)">2. Normal</button>
+          <button class="ghost" onclick="playListeningRate(1.02)">3. Natural+</button>
+          <button class="ghost" onclick="toggleListeningTranscript()">Transcript</button>
+        </div>
+        <div id="listeningTranscript" class="notice hidden" style="margin-top:10px"></div>
+        <input id="dictationInput" style="margin-top:10px" placeholder="Type what you hear">
+        <button style="margin-top:10px" onclick="checkDictation()">Check word by word</button>
+        <div id="dictationFeedback" class="small" style="margin-top:10px"></div>
+        <div id="dictationWordDiff" class="word-diff"></div>
+      </div>
+
+      <div class="card c6" id="speakingCard">
+        <h2>Speaking challenge</h2>
+        <p id="speakingPrompt"></p>
+        <p class="small muted">Speak first. Then write a few notes if you want a record of what you said.</p>
+        <textarea id="speakingNotes" placeholder="Optional notes in French…"></textarea>
+        <div class="row" style="margin-top:10px">
+          <button onclick="saveSpeakingNotes()">Save +5 XP</button>
+          <button class="secondary" onclick="startFreeSpeech()">🎙 Speech check</button>
+        </div>
+        <div id="freeSpeechFeedback" class="small" style="margin-top:10px"></div>
+      </div>
+
+      <div class="card c12" id="readingCard">
+        <h2 id="readingTitle">Reading</h2>
+        <div class="reading" id="readingText"></div>
+        <p id="readingQuestion" style="font-weight:700"></p>
+        <input id="readingAnswer" placeholder="Answer in French or English">
+        <button style="margin-top:10px" onclick="saveReading()">Save response +5 XP</button>
+      </div>
+
+      <div class="card c6" id="quizCard">
+        <h2>Quick quiz</h2>
+        <div id="quizQuestion"></div>
+        <div id="quizOptions"></div>
+        <div id="quizFeedback" class="small"></div>
+      </div>
+
+      <div class="card c6" id="journalCard">
+        <h2>5-sentence journal</h2>
+        <p class="muted">Write about your actual day. Simple, correct-enough French beats complicated English translated word-for-word.</p>
+        <textarea id="journal" placeholder="Aujourd'hui…"></textarea>
+        <button style="margin-top:10px" onclick="saveJournal()">Save journal +5 XP</button>
+      </div>
+
+      <div class="card c12" id="unitTestCard" data-focus-target="checkpoint">
+        <div class="spread">
+          <div>
+            <h2>Unit checkpoint</h2>
+            <p class="muted" id="unitTestDescription"></p>
+          </div>
+          <button onclick="startUnitTest()">Start checkpoint</button>
+        </div>
+        <div id="unitTestArea"></div>
+      </div>
+
+      <div class="card c12">
+        <div class="spread">
+          <div>
+            <h2>Finish today's lesson</h2>
+            <p class="muted">Complete the core work, speak French aloud, then move on. Consistency beats marathon sessions.</p>
+          </div>
+          <button class="good" onclick="completeDay()">Complete day ✓</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="review" class="view">
+    <div class="grid">
+      <div class="card c8">
+        <div class="spread">
+          <div><h2>Adaptive review</h2><p class="muted">Cards due today are prioritized by lateness and past mistakes.</p></div>
+          <div class="row"><span class="pill" id="reviewModePill"></span><span class="pill" id="reviewDuePill"></span></div>
+        </div>
+        <div id="reviewEmpty" class="notice hidden">Nothing is due right now. Nice. You can still use Practice for extra work.</div>
+        <div id="reviewPanel">
+          <div id="reviewFlash" class="flash" onclick="toggleReviewFlash()">
+            <div><div class="fr" id="reviewFr"></div><div class="en" id="reviewEn"></div></div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button class="secondary" onclick="speakText(activeReviewCard()?.front || '')">🔊 Pronounce</button>
+            <button class="ghost" onclick="toggleReviewFlash()">Reveal</button>
+          </div>
+          <div class="srs-buttons">
+            <button class="bad" onclick="rateReview('again')">Again</button>
+            <button class="warn" onclick="rateReview('hard')">Hard</button>
+            <button class="good" onclick="rateReview('good')">Good</button>
+            <button onclick="rateReview('easy')">Easy</button>
+          </div>
+        </div>
+      </div>
+      <div class="card c4">
+        <h2>Review stats</h2>
+        <div class="meter">
+          <div class="metric"><b id="reviewLearning">0</b><span class="small muted">Learning</span></div>
+          <div class="metric"><b id="reviewMature">0</b><span class="small muted">Mature</span></div>
+          <div class="metric"><b id="reviewLapses">0</b><span class="small muted">Lapses</span></div>
+          <div class="metric"><b id="reviewAccuracy">—</b><span class="small muted">Accuracy</span></div>
+          <div class="metric"><b id="reviewRecognition">—</b><span class="small muted">Recognition</span></div>
+          <div class="metric"><b id="reviewProduction">—</b><span class="small muted">Production</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mistakes" class="view">
+    <div class="grid">
+      <div class="card c12">
+        <div class="spread">
+          <div>
+            <h2>Mistake notebook</h2>
+            <p class="muted">Every meaningful miss becomes study data. Recurring mistakes rise to the top until you recover them.</p>
+          </div>
+          <div class="row">
+            <select id="mistakeFilter" onchange="renderMistakes()">
+              <option value="open">Open mistakes</option>
+              <option value="recurring">Recurring</option>
+              <option value="vocabulary">Vocabulary</option>
+              <option value="listening">Listening</option>
+              <option value="translation">Translation</option>
+              <option value="quiz">Quiz / checkpoint</option>
+              <option value="resolved">Resolved</option>
+              <option value="all">All</option>
+            </select>
+            <select id="mistakeSort" onchange="renderMistakes()">
+              <option value="priority">Priority</option>
+              <option value="recent">Most recent</option>
+              <option value="frequent">Most frequent</option>
+            </select>
+          </div>
+        </div>
+        <div class="meter" style="margin-top:14px">
+          <div class="metric"><b id="mistakeOpen">0</b><span class="small muted">Open</span></div>
+          <div class="metric"><b id="mistakeRecurring">0</b><span class="small muted">Recurring</span></div>
+          <div class="metric"><b id="mistakeRecovered">0</b><span class="small muted">Recovered</span></div>
+          <div class="metric"><b id="mistakeTotalEvents">0</b><span class="small muted">Mistake events</span></div>
+        </div>
+      </div>
+
+      <div class="card c8">
+        <div class="spread"><h2>Notebook</h2><span class="small muted" id="mistakeListCount"></span></div>
+        <div id="mistakeList"></div>
+      </div>
+
+      <div class="card c4">
+        <h2>Recovery drill</h2>
+        <div id="mistakePracticeEmpty" class="notice">Choose Practice on a mistake to work it until you can retrieve the answer twice.</div>
+        <div id="mistakePracticePanel" class="hidden">
+          <span class="pill" id="mistakePracticeType"></span>
+          <p id="mistakePracticePrompt" style="font-weight:750"></p>
+          <input id="mistakePracticeAnswer" placeholder="Type your answer">
+          <div class="row" style="margin-top:10px">
+            <button onclick="checkMistakePractice()">Check</button>
+            <button class="secondary" onclick="speakMistakeExpected()">🔊 Hear answer</button>
+          </div>
+          <div id="mistakePracticeFeedback" class="small" style="margin-top:10px"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="practice" class="view">
+    <div class="grid">
+      <div class="card c6">
+        <div class="spread"><h2>Pronunciation course</h2><span class="pill" id="pronModulePill"></span></div>
+        <select id="pronModuleSelect" onchange="renderPronunciationModule()"></select>
+        <div class="notice" style="margin-top:10px">
+          <strong id="pronModuleTitle"></strong>
+          <p id="pronModuleTip" class="small" style="margin-bottom:0"></p>
+        </div>
+        <div id="pronPairs" style="margin-top:10px"></div>
+        <select id="pronunciationSelect" style="margin-top:10px"></select>
+        <div class="row" style="margin-top:10px">
+          <button onclick="playPronunciationTarget()">Hear target</button>
+          <button class="secondary" onclick="checkPronunciationTarget()">🎙 Say target</button>
+          <button class="ghost" onclick="nextPronunciationTarget()">Next target</button>
+        </div>
+        <div id="pronunciationFeedback" class="small" style="margin-top:10px"></div>
+      </div>
+
+      <div class="card c6">
+        <div class="spread"><h2>Listening lab</h2><span class="pill" id="listeningLabLevel"></span></div>
+        <p class="muted">Train the same sentence at three speeds, then reconstruct it from sound.</p>
+        <div class="row">
+          <button class="secondary" onclick="playLabListening(.68)">Slow</button>
+          <button onclick="playLabListening(.88)">Normal</button>
+          <button class="ghost" onclick="playLabListening(1.05)">Natural+</button>
+        </div>
+        <input id="labListeningInput" style="margin-top:10px" placeholder="Type what you heard">
+        <button style="margin-top:10px" onclick="checkLabListening()">Check</button>
+        <div id="labListeningFeedback" class="small" style="margin-top:10px"></div>
+        <div id="labListeningDiff" class="word-diff"></div>
+      </div>
+      <div class="card c6">
+        <h2>Rapid translation</h2>
+        <div class="phrase" id="rapidPrompt"></div>
+        <input id="rapidAnswer" style="margin-top:10px" placeholder="Type the French">
+        <div class="row" style="margin-top:10px">
+          <button onclick="checkRapid()">Check</button>
+          <button class="secondary" onclick="newRapid()">New prompt</button>
+        </div>
+        <div id="rapidFeedback" class="small" style="margin-top:10px"></div>
+      </div>
+      <div class="card c6">
+        <h2>Conversation simulator</h2>
+        <select id="scenarioSelect">
+          <option value="cafe">Café order</option>
+          <option value="shop">Clothing shop</option>
+          <option value="directions">Asking directions</option>
+          <option value="friend">Making plans</option>
+          <option value="problem">Return / refund problem</option>
+          <option value="hotel">Hotel check-in</option>
+          <option value="train">Train disruption</option>
+          <option value="pharmacy">Pharmacy</option>
+          <option value="party">Meeting people at a party</option>
+          <option value="restaurant">Restaurant reservation</option>
+          <option value="work">Work / school conversation</option>
+          <option value="story">Tell a story to a friend</option>
+        </select>
+        <div id="scenario" class="reading" style="margin-top:10px"></div>
+        <textarea id="scenarioAnswer" placeholder="Reply in French…"></textarea>
+        <button style="margin-top:10px" onclick="nextScenarioTurn()">Respond</button>
+        <div id="scenarioFeedback" class="small" style="margin-top:10px"></div>
+      </div>
+      <div class="card c6">
+        <h2>Custom vocabulary</h2>
+        <div class="row">
+          <input id="customFrench" placeholder="French word or phrase" style="flex:1;min-width:180px">
+          <input id="customEnglish" placeholder="Meaning" style="flex:1;min-width:180px">
+        </div>
+        <button style="margin-top:10px" onclick="addCustomCard()">Add to SRS</button>
+        <p class="small muted">Add words from songs, shows, RP, class, or real conversations. Your custom cards use the same review system.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="progress" class="view">
+    <div class="grid">
+      <div class="card c12">
+        <div class="spread">
+          <div><h2>Course progress</h2><p class="muted" id="progressSummary"></p></div>
+          <div class="score" id="progressPercent">0%</div>
+        </div>
+        <div class="progress"><div id="progressBigBar"></div></div>
+      </div>
+      <div class="card c12">
+        <div class="meter">
+          <div class="metric"><b id="pDays">0</b><span class="small muted">Days completed</span></div>
+          <div class="metric"><b id="pCards">0</b><span class="small muted">Cards introduced</span></div>
+          <div class="metric"><b id="pMature">0</b><span class="small muted">Mature cards</span></div>
+          <div class="metric"><b id="pQuiz">—</b><span class="small muted">Quiz accuracy</span></div>
+          <div class="metric"><b id="pRecognition">—</b><span class="small muted">Recognition mastery</span></div>
+          <div class="metric"><b id="pProduction">—</b><span class="small muted">Production mastery</span></div>
+        </div>
+      </div>
+      <div class="card c6">
+        <h2>Adaptive coach</h2>
+        <div class="coach-rec" id="adaptiveCoachText"></div>
+        <div class="row" style="margin-top:12px">
+          <button onclick="followCoachRecommendation()">Follow recommendation</button>
+          <button class="secondary" onclick="setSessionMode('quick');showView('today')">Do a quick lesson</button>
+        </div>
+      </div>
+      <div class="card c6">
+        <h2>Skill profile</h2>
+        <div id="skillProfile"></div>
+      </div>
+
+      <div class="card c6">
+        <h2>Current level path</h2>
+        <div id="levelPath"></div>
+      </div>
+      <div class="card c6">
+        <h2>Words needing attention</h2>
+        <div id="weakWords"></div>
+      </div>
+      <div class="card c12">
+        <h2>Milestones</h2>
+        <div id="milestones"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="assess" class="view">
+    <div class="grid">
+      <div class="card c12">
+        <div class="spread">
+          <div>
+            <h2>CEFR-style milestone assessments</h2>
+            <p class="muted">These are in-app readiness checks, not official CEFR certifications. They sample vocabulary, production, listening, reading and grammar.</p>
+          </div>
+          <span class="pill" id="assessmentRecommended"></span>
+        </div>
+        <div id="assessmentMilestones" class="mission-grid" style="margin-top:12px"></div>
+      </div>
+      <div class="card c8">
+        <div class="spread"><h2>Assessment</h2><span class="pill" id="assessmentProgressPill">Not started</span></div>
+        <div id="assessmentArea" class="notice">Choose an assessment above when you want a checkpoint. You can retake any unlocked assessment.</div>
+      </div>
+      <div class="card c4">
+        <h2>Readiness</h2>
+        <div id="assessmentReadiness"></div>
+        <div class="divider"></div>
+        <p class="small muted">A low score is study data, not a verdict. The adaptive coach uses it to suggest what to practice next.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="settings" class="view">
+    <div class="grid">
+      <div class="card c6">
+        <h2>Audio & display</h2>
+        <label>French speech rate: <strong id="rateLabel">0.85×</strong></label>
+        <input id="speechRate" type="range" min="0.55" max="1.15" step="0.05" value="0.85" oninput="updateSpeechRate(this.value)">
+        <label style="display:block;margin-top:14px">Theme</label>
+        <select id="themeSelect" onchange="setTheme(this.value)">
+          <option value="light">Light</option>
+          <option value="calm">Calm / low stimulation</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+      <div class="card c6">
+        <h2>Microphone & backup</h2>
+        <p class="small muted">GitHub Pages runs as a normal HTTPS site, so microphone practice can request browser permission directly. Your progress stays in this browser unless you export a backup.</p>
+        <div class="row">
+          <button onclick="requestMicrophoneAccess()">🎙 Enable microphone</button>
+          <button class="secondary" onclick="refreshMicStatus()">Check microphone</button>
+        </div>
+        <div id="micStatus" class="small" style="margin-top:10px">Microphone status not checked yet.</div>
+        <div class="divider"></div>
+        <div class="row">
+          <button class="secondary" onclick="exportProgress()">Export backup</button>
+          <label style="display:inline-block"><input id="importFile" type="file" accept=".json" onchange="importProgress(event)" style="max-width:230px"></label>
+        </div>
+        <p class="small muted" style="margin-top:10px">Tip: export a backup occasionally, especially before clearing browser data or switching devices.</p>
+      </div>
+      <div class="card c12">
+        <h2>Focus, sensory & executive-function supports</h2>
+        <p class="muted">These controls change presentation and workload, not the learning standards.</p>
+        <div class="grid">
+          <div class="c4">
+            <label><strong>Default session size</strong></label>
+            <select id="defaultSessionSelect" onchange="setSessionMode(this.value)">
+              <option value="quick">Quick 10</option>
+              <option value="standard">Standard 25</option>
+              <option value="deep">Deep 45</option>
+            </select>
+          </div>
+          <div class="c4">
+            <label><strong>Text size</strong></label>
+            <select id="fontScaleSelect" onchange="setFontScale(this.value)">
+              <option value="0.95">Compact</option>
+              <option value="1">Standard</option>
+              <option value="1.1">Large</option>
+              <option value="1.2">Extra large</option>
+            </select>
+          </div>
+          <div class="c4">
+            <label><strong>Text spacing</strong></label>
+            <select id="spacingSelect" onchange="setSpacing(this.value)">
+              <option value="normal">Standard</option>
+              <option value="wide">Extra breathing room</option>
+            </select>
+          </div>
+          <div class="c4">
+            <label><strong>Motion</strong></label>
+            <select id="motionSelect" onchange="setReducedMotion(this.value==='reduce')">
+              <option value="normal">Normal</option>
+              <option value="reduce">Reduce motion</option>
+            </select>
+          </div>
+          <div class="c4">
+            <label><strong>Contrast</strong></label>
+            <select id="contrastSelect" onchange="setContrast(this.value)">
+              <option value="normal">Standard</option>
+              <option value="high">High contrast</option>
+            </select>
+          </div>
+          <div class="c4">
+            <label><strong>Dashboard stimulation</strong></label>
+            <select id="stimulationSelect" onchange="setLowStim(this.value==='low')">
+              <option value="standard">Standard</option>
+              <option value="low">Low stimulation</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" style="margin-top:14px">
+          <label class="row"><input id="gentleMomentumCheck" type="checkbox" style="width:auto" onchange="setGentleMomentum(this.checked)"> Show 7-day momentum instead of a breakable streak</label>
+          <label class="row"><input id="showXpCheck" type="checkbox" style="width:auto" onchange="setShowXP(this.checked)"> Show XP</label>
+        </div>
+      </div>
+
+      <div class="card c12">
+        <h2>Course controls</h2>
+        <div class="row">
+          <button class="secondary" onclick="jumpDay(-1)">← Previous day</button>
+          <button class="secondary" onclick="jumpDay(1)">Next day →</button>
+          <button class="bad" onclick="resetAll()">Reset everything</button>
+        </div>
+        <p class="small muted">Moving between days does not automatically mark them complete. This is useful if you want to revisit a lesson.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const UNITS = [{"theme": "Greetings & identity", "cefr": "A1", "grammar_title": "Subject pronouns + être", "grammar": "Use je, tu, il/elle, nous, vous, ils/elles with être to identify and describe people.", "examples": ["Je suis Spencer.", "Tu es américaine.", "Nous sommes ici."], "vocab": [["bonjour", "hello / good morning"], ["salut", "hi / bye"], ["bonsoir", "good evening"], ["merci", "thank you"], ["s'il vous plaît", "please"], ["pardon", "sorry / excuse me"], ["oui", "yes"], ["non", "no"], ["être", "to be"], ["s'appeler", "to be called"], ["habiter", "to live"], ["parler", "to speak"], ["français", "French"], ["anglais", "English"], ["américain / américaine", "American"], ["enchanté / enchantée", "nice to meet you"]], "phrases": [["Comment tu t'appelles ?", "What's your name?"], ["Je m'appelle Spencer.", "My name is Spencer."], ["J'habite aux États-Unis.", "I live in the United States."], ["J'apprends le français.", "I'm learning French."]], "speaking": "Introduce yourself in 4–6 sentences: name, where you live, languages, and one thing you like."}, {"theme": "Numbers, time & dates", "cefr": "A1", "grammar_title": "Avoir + age / time expressions", "grammar": "French uses avoir for age and many common expressions. Use il est for clock time.", "examples": ["J'ai vingt-huit ans.", "Il est deux heures.", "Nous sommes vendredi."], "vocab": [["zéro", "zero"], ["un", "one"], ["deux", "two"], ["trois", "three"], ["dix", "ten"], ["vingt", "twenty"], ["trente", "thirty"], ["cent", "hundred"], ["heure", "hour"], ["minute", "minute"], ["aujourd'hui", "today"], ["demain", "tomorrow"], ["hier", "yesterday"], ["matin", "morning"], ["soir", "evening"], ["semaine", "week"]], "phrases": [["Quelle heure est-il ?", "What time is it?"], ["Il est neuf heures.", "It's nine o'clock."], ["Quel jour sommes-nous ?", "What day is it?"], ["J'ai vingt-huit ans.", "I'm 28 years old."]], "speaking": "Say your age, today's day, the current part of the day, and two times when you normally do things."}, {"theme": "Family & people", "cefr": "A1", "grammar_title": "Possessive adjectives", "grammar": "Use mon/ma/mes, ton/ta/tes, son/sa/ses to show possession. Gender follows the noun being owned.", "examples": ["Ma mère est gentille.", "Mon frère habite ici.", "Mes amis sont drôles."], "vocab": [["famille", "family"], ["mère", "mother"], ["père", "father"], ["frère", "brother"], ["sœur", "sister"], ["parent", "parent / relative"], ["ami / amie", "friend"], ["personne", "person"], ["enfant", "child"], ["mari", "husband"], ["femme", "wife / woman"], ["copain / copine", "friend / boyfriend / girlfriend"], ["gentil / gentille", "kind"], ["drôle", "funny"], ["jeune", "young"], ["âgé / âgée", "older / aged"]], "phrases": [["Voici ma famille.", "Here is my family."], ["J'ai un frère.", "I have a brother."], ["Elle est mon amie.", "She is my friend."], ["Mes amis habitent près d'ici.", "My friends live near here."]], "speaking": "Describe three people you know using relationship words and two adjectives for each."}, {"theme": "Home & everyday objects", "cefr": "A1", "grammar_title": "Il y a + articles", "grammar": "Use il y a for 'there is / there are'. Practice un/une/des and le/la/les.", "examples": ["Il y a une table.", "La cuisine est petite.", "J'ai des clés."], "vocab": [["maison", "house / home"], ["appartement", "apartment"], ["chambre", "bedroom"], ["cuisine", "kitchen"], ["salle de bains", "bathroom"], ["salon", "living room"], ["porte", "door"], ["fenêtre", "window"], ["table", "table"], ["chaise", "chair"], ["lit", "bed"], ["clé", "key"], ["téléphone", "phone"], ["ordinateur", "computer"], ["livre", "book"], ["lampe", "lamp"]], "phrases": [["Il y a deux chambres.", "There are two bedrooms."], ["Où sont mes clés ?", "Where are my keys?"], ["La cuisine est à gauche.", "The kitchen is on the left."], ["Mon téléphone est sur la table.", "My phone is on the table."]], "speaking": "Describe the room you are in. Mention at least five objects and where two of them are."}, {"theme": "Food & drinks", "cefr": "A1", "grammar_title": "Partitive articles", "grammar": "Use du, de la, de l' and des for unspecified amounts of food and drink.", "examples": ["Je bois du café.", "Je mange de la soupe.", "Je veux de l'eau."], "vocab": [["eau", "water"], ["café", "coffee"], ["thé", "tea"], ["pain", "bread"], ["fromage", "cheese"], ["riz", "rice"], ["poulet", "chicken"], ["poisson", "fish"], ["fruit", "fruit"], ["légume", "vegetable"], ["pomme", "apple"], ["banane", "banana"], ["manger", "to eat"], ["boire", "to drink"], ["faim", "hunger"], ["soif", "thirst"]], "phrases": [["J'ai faim.", "I'm hungry."], ["J'ai soif.", "I'm thirsty."], ["Je voudrais de l'eau.", "I'd like some water."], ["Je ne mange pas de viande.", "I don't eat meat."]], "speaking": "Describe what you usually eat for breakfast and lunch and what you like to drink."}, {"theme": "Daily routine", "cefr": "A1", "grammar_title": "Present tense -er verbs", "grammar": "Most -er verbs follow a regular present-tense pattern. Focus first on je, tu, il/elle, nous, vous, ils/elles.", "examples": ["Je travaille.", "Tu regardes la télé.", "Nous écoutons de la musique."], "vocab": [["se lever", "to get up"], ["se réveiller", "to wake up"], ["travailler", "to work"], ["étudier", "to study"], ["manger", "to eat"], ["boire", "to drink"], ["écouter", "to listen"], ["regarder", "to watch"], ["jouer", "to play"], ["marcher", "to walk"], ["rentrer", "to return home"], ["dormir", "to sleep"], ["souvent", "often"], ["parfois", "sometimes"], ["toujours", "always"], ["jamais", "never"]], "phrases": [["Je me lève à sept heures.", "I get up at seven."], ["Je travaille le matin.", "I work in the morning."], ["Le soir, je regarde une série.", "In the evening, I watch a series."], ["Je ne me couche pas tard.", "I don't go to bed late."]], "speaking": "Walk through your normal day from waking up to going to bed."}, {"theme": "Places & directions", "cefr": "A1", "grammar_title": "À / au / à la / aux", "grammar": "Use à with places. Contractions: à + le = au and à + les = aux.", "examples": ["Je vais au café.", "Elle est à la banque.", "Nous allons aux magasins."], "vocab": [["ville", "city"], ["rue", "street"], ["café", "café"], ["restaurant", "restaurant"], ["banque", "bank"], ["hôpital", "hospital"], ["pharmacie", "pharmacy"], ["gare", "train station"], ["école", "school"], ["magasin", "store"], ["gauche", "left"], ["droite", "right"], ["tout droit", "straight ahead"], ["près", "near"], ["loin", "far"], ["coin", "corner"]], "phrases": [["Où est la gare ?", "Where is the station?"], ["Tournez à droite.", "Turn right."], ["Allez tout droit.", "Go straight."], ["C'est près d'ici.", "It's near here."]], "speaking": "Give simple directions from your home to a nearby place."}, {"theme": "Shopping & money", "cefr": "A1", "grammar_title": "Demonstratives: ce/cet/cette/ces", "grammar": "Use ce/cet/cette/ces for 'this/that/these/those' before nouns.", "examples": ["Je prends cette chemise.", "Combien coûte ce sac ?", "Ces chaussures sont chères."], "vocab": [["acheter", "to buy"], ["coûter", "to cost"], ["prix", "price"], ["argent", "money"], ["euro", "euro"], ["dollar", "dollar"], ["cher / chère", "expensive"], ["bon marché", "inexpensive"], ["taille", "size"], ["essayer", "to try on"], ["payer", "to pay"], ["carte", "card"], ["espèces", "cash"], ["sac", "bag"], ["magasin", "store"], ["reçu", "receipt"]], "phrases": [["Combien ça coûte ?", "How much does it cost?"], ["Je peux l'essayer ?", "Can I try it on?"], ["Je vais payer par carte.", "I'll pay by card."], ["Vous avez une autre taille ?", "Do you have another size?"]], "speaking": "Role-play buying an item: ask the price, size, try it on, and pay."}, {"theme": "Clothing & appearance", "cefr": "A1", "grammar_title": "Adjective agreement", "grammar": "Many adjectives change for gender and number. Practice common descriptions in phrases rather than isolated tables.", "examples": ["Une robe noire.", "Des chaussures blanches.", "Il est grand."], "vocab": [["chemise", "shirt"], ["robe", "dress"], ["jupe", "skirt"], ["pantalon", "pants"], ["chaussures", "shoes"], ["veste", "jacket"], ["chapeau", "hat"], ["noir / noire", "black"], ["blanc / blanche", "white"], ["rouge", "red"], ["bleu / bleue", "blue"], ["vert / verte", "green"], ["grand / grande", "tall / large"], ["petit / petite", "small / short"], ["beau / belle", "beautiful / handsome"], ["porter", "to wear"]], "phrases": [["Je porte une veste noire.", "I'm wearing a black jacket."], ["Cette robe est très jolie.", "This dress is very pretty."], ["Tu préfères le bleu ou le rouge ?", "Do you prefer blue or red?"], ["Ces chaussures me plaisent.", "I like these shoes."]], "speaking": "Describe what you're wearing and an outfit you would choose for going out."}, {"theme": "Hobbies, music & games", "cefr": "A1", "grammar_title": "Aimer / adorer / préférer + infinitive/noun", "grammar": "Use aimer, adorer, préférer and détester to talk about interests and preferences.", "examples": ["J'aime danser.", "J'adore la musique.", "Je préfère les jeux de rôle."], "vocab": [["musique", "music"], ["chanson", "song"], ["concert", "concert"], ["film", "movie"], ["série", "series"], ["jeu vidéo", "video game"], ["livre", "book"], ["danser", "to dance"], ["chanter", "to sing"], ["dessiner", "to draw"], ["lire", "to read"], ["jouer", "to play"], ["aimer", "to like"], ["adorer", "to love"], ["préférer", "to prefer"], ["détester", "to hate"]], "phrases": [["J'adore cette chanson.", "I love this song."], ["Tu joues à quoi ?", "What do you play?"], ["Je préfère les concerts.", "I prefer concerts."], ["Qu'est-ce que tu fais pour t'amuser ?", "What do you do for fun?"]], "speaking": "Talk for one minute about your favorite music, game, show, or hobby."}, {"theme": "School & work", "cefr": "A1-A2", "grammar_title": "Devoir / pouvoir / vouloir", "grammar": "These modal verbs let you express obligation, ability and desire before another infinitive.", "examples": ["Je dois travailler.", "Je peux venir.", "Je veux apprendre."], "vocab": [["travail", "work"], ["école", "school"], ["classe", "class"], ["cours", "course / class"], ["professeur", "teacher"], ["collègue", "coworker"], ["client / cliente", "client"], ["devoir", "to have to"], ["pouvoir", "to be able to"], ["vouloir", "to want"], ["commencer", "to begin"], ["finir", "to finish"], ["pause", "break"], ["horaire", "schedule"], ["réunion", "meeting"], ["projet", "project"]], "phrases": [["Je dois finir ce projet.", "I have to finish this project."], ["Je peux faire une pause ?", "Can I take a break?"], ["À quelle heure commence le cours ?", "What time does class start?"], ["Je travaille jusqu'à quatre heures.", "I work until four."]], "speaking": "Describe your school or work schedule and what you have to do today."}, {"theme": "Weather & seasons", "cefr": "A1-A2", "grammar_title": "Impersonal weather expressions", "grammar": "Weather often uses il fait, il y a, or a special verb such as pleuvoir.", "examples": ["Il fait froid.", "Il y a du vent.", "Il pleut."], "vocab": [["temps", "weather"], ["soleil", "sun"], ["pluie", "rain"], ["neige", "snow"], ["vent", "wind"], ["chaud", "hot"], ["froid", "cold"], ["nuageux", "cloudy"], ["printemps", "spring"], ["été", "summer"], ["automne", "autumn"], ["hiver", "winter"], ["météo", "forecast"], ["degré", "degree"], ["pleuvoir", "to rain"], ["neiger", "to snow"]], "phrases": [["Quel temps fait-il ?", "What's the weather like?"], ["Il fait beau aujourd'hui.", "The weather is nice today."], ["Il va pleuvoir demain.", "It's going to rain tomorrow."], ["J'aime l'automne.", "I like autumn."]], "speaking": "Describe today's weather and your favorite season, with reasons."}, {"theme": "Body & everyday health", "cefr": "A1-A2", "grammar_title": "Avoir mal à", "grammar": "Use avoir mal à + body part to say something hurts. Use au/à la/aux as needed.", "examples": ["J'ai mal à la tête.", "J'ai mal au dos.", "J'ai mal aux pieds."], "vocab": [["tête", "head"], ["main", "hand"], ["bras", "arm"], ["jambe", "leg"], ["pied", "foot"], ["dos", "back"], ["ventre", "stomach"], ["œil", "eye"], ["nez", "nose"], ["bouche", "mouth"], ["fatigué / fatiguée", "tired"], ["malade", "sick"], ["douleur", "pain"], ["médecin", "doctor"], ["repos", "rest"], ["mieux", "better"]], "phrases": [["Je ne me sens pas bien.", "I don't feel well."], ["J'ai mal à la tête.", "I have a headache."], ["J'ai besoin de me reposer.", "I need to rest."], ["Ça va mieux.", "It's getting better."]], "speaking": "Practice explaining a simple everyday complaint and what you need."}, {"theme": "Transportation & travel", "cefr": "A1-A2", "grammar_title": "Aller / venir / prendre", "grammar": "Use aller and venir for movement and prendre for common transportation.", "examples": ["Je prends le bus.", "Nous allons à Paris.", "Elle vient de Montréal."], "vocab": [["voiture", "car"], ["bus", "bus"], ["train", "train"], ["métro", "metro"], ["avion", "plane"], ["vélo", "bike"], ["gare", "station"], ["aéroport", "airport"], ["billet", "ticket"], ["voyage", "trip"], ["partir", "to leave"], ["arriver", "to arrive"], ["prendre", "to take"], ["conduire", "to drive"], ["retard", "delay / lateness"], ["quai", "platform"]], "phrases": [["Je voudrais un billet pour Paris.", "I'd like a ticket to Paris."], ["Le train part à quelle heure ?", "What time does the train leave?"], ["Je prends le métro.", "I take the metro."], ["Le bus est en retard.", "The bus is late."]], "speaking": "Explain how you usually get around and role-play buying a train ticket."}, {"theme": "Restaurants & cafés", "cefr": "A1-A2", "grammar_title": "Conditional politeness: je voudrais", "grammar": "Je voudrais is a very useful polite form for ordering and requesting.", "examples": ["Je voudrais un café.", "Nous voudrions une table.", "Je voudrais payer."], "vocab": [["menu", "menu"], ["serveur / serveuse", "server"], ["table", "table"], ["entrée", "starter"], ["plat", "main dish"], ["dessert", "dessert"], ["addition", "bill / check"], ["commander", "to order"], ["réserver", "to reserve"], ["délicieux / délicieuse", "delicious"], ["cuisson", "cooking / doneness"], ["sans", "without"], ["avec", "with"], ["encore", "again / more"], ["fourchette", "fork"], ["verre", "glass"]], "phrases": [["Une table pour deux, s'il vous plaît.", "A table for two, please."], ["Je voudrais commander.", "I'd like to order."], ["L'addition, s'il vous plaît.", "The check, please."], ["C'était délicieux.", "It was delicious."]], "speaking": "Role-play entering a café, ordering a meal, asking for something, and paying."}, {"theme": "Social plans & invitations", "cefr": "A2", "grammar_title": "Futur proche", "grammar": "Use conjugated aller + infinitive to talk about plans and near-future actions.", "examples": ["Je vais sortir.", "On va se voir samedi.", "Tu vas venir ?"], "vocab": [["sortir", "to go out"], ["venir", "to come"], ["inviter", "to invite"], ["fête", "party"], ["soirée", "evening / party"], ["rendez-vous", "appointment / date"], ["samedi", "Saturday"], ["dimanche", "Sunday"], ["ce soir", "tonight"], ["ensemble", "together"], ["libre", "free / available"], ["occupé / occupée", "busy"], ["peut-être", "maybe"], ["bien sûr", "of course"], ["d'accord", "okay / agreed"], ["annuler", "to cancel"]], "phrases": [["Tu veux sortir ce soir ?", "Do you want to go out tonight?"], ["On va se voir samedi.", "We're going to see each other Saturday."], ["Je suis libre demain.", "I'm free tomorrow."], ["Désolée, je dois annuler.", "Sorry, I have to cancel."]], "speaking": "Invite someone to do something, negotiate a time, and accept or decline politely."}, {"theme": "Past events I", "cefr": "A2", "grammar_title": "Passé composé with avoir", "grammar": "Use avoir + past participle for many completed past actions.", "examples": ["J'ai mangé.", "Tu as regardé le film.", "Nous avons fini."], "vocab": [["hier", "yesterday"], ["la semaine dernière", "last week"], ["manger", "to eat"], ["regarder", "to watch"], ["écouter", "to listen"], ["acheter", "to buy"], ["travailler", "to work"], ["étudier", "to study"], ["finir", "to finish"], ["prendre", "to take"], ["voir", "to see"], ["faire", "to do / make"], ["avoir", "to have"], ["déjà", "already"], ["jamais", "never"], ["puis", "then"]], "phrases": [["Hier, j'ai travaillé.", "Yesterday, I worked."], ["J'ai vu un film.", "I saw a movie."], ["On a mangé au restaurant.", "We ate at the restaurant."], ["Qu'est-ce que tu as fait ?", "What did you do?"]], "speaking": "Tell me what you did yesterday using at least five past-tense verbs."}, {"theme": "Past events II", "cefr": "A2", "grammar_title": "Passé composé with être", "grammar": "Some common movement and reflexive verbs use être in the passé composé and agree with the subject.", "examples": ["Je suis allée au café.", "Elle est arrivée tard.", "Nous sommes partis tôt."], "vocab": [["aller", "to go"], ["venir", "to come"], ["arriver", "to arrive"], ["partir", "to leave"], ["entrer", "to enter"], ["sortir", "to go out"], ["monter", "to go up"], ["descendre", "to go down"], ["rester", "to stay"], ["retourner", "to return"], ["naître", "to be born"], ["tomber", "to fall"], ["tôt", "early"], ["tard", "late"], ["ensuite", "next"], ["finalement", "finally"]], "phrases": [["Je suis allée en ville.", "I went downtown."], ["Nous sommes arrivés tard.", "We arrived late."], ["Elle est rentrée chez elle.", "She went back home."], ["Ils sont partis tôt.", "They left early."]], "speaking": "Tell a short story about going somewhere, arriving, doing something, and returning home."}, {"theme": "Future & intentions", "cefr": "A2", "grammar_title": "Future proche vs future simple preview", "grammar": "Use futur proche for near plans. Learn a few common future-simple forms for predictions and longer-term plans.", "examples": ["Je vais voyager.", "Je serai là demain.", "On verra."], "vocab": [["projet", "plan / project"], ["avenir", "future"], ["bientôt", "soon"], ["plus tard", "later"], ["prochain / prochaine", "next"], ["voyager", "to travel"], ["apprendre", "to learn"], ["changer", "to change"], ["commencer", "to start"], ["continuer", "to continue"], ["espérer", "to hope"], ["penser", "to think"], ["prévoir", "to plan / foresee"], ["serai", "will be"], ["aurai", "will have"], ["verrai", "will see"]], "phrases": [["Je vais continuer à apprendre.", "I'm going to keep learning."], ["L'année prochaine, je vais voyager.", "Next year, I'm going to travel."], ["On verra.", "We'll see."], ["J'espère que ça ira bien.", "I hope it will go well."]], "speaking": "Talk about your plans for next week, next month, and next year."}, {"theme": "Opinions & preferences", "cefr": "A2", "grammar_title": "Opinion frames + que", "grammar": "Use je pense que, je trouve que, à mon avis, and je crois que to express opinions.", "examples": ["Je pense que c'est utile.", "À mon avis, c'est mieux.", "Je trouve ce film excellent."], "vocab": [["avis", "opinion"], ["penser", "to think"], ["croire", "to believe"], ["trouver", "to find / think"], ["préférer", "to prefer"], ["d'accord", "agree"], ["pas d'accord", "disagree"], ["important / importante", "important"], ["intéressant / intéressante", "interesting"], ["ennuyeux / ennuyeuse", "boring"], ["utile", "useful"], ["inutile", "useless"], ["mieux", "better"], ["pire", "worse"], ["raison", "reason"], ["parce que", "because"]], "phrases": [["À mon avis, c'est une bonne idée.", "In my opinion, it's a good idea."], ["Je ne suis pas d'accord.", "I don't agree."], ["Je préfère ça parce que…", "I prefer that because…"], ["Qu'est-ce que tu en penses ?", "What do you think about it?"]], "speaking": "Give your opinion about a movie, song, game, or trend and support it with three reasons."}, {"theme": "Comparisons", "cefr": "A2", "grammar_title": "Plus / moins / aussi…que", "grammar": "Use plus…que, moins…que and aussi…que to compare qualities, and plus de / moins de for quantities.", "examples": ["C'est plus grand.", "Elle est aussi rapide que lui.", "J'ai moins de temps."], "vocab": [["plus", "more"], ["moins", "less"], ["aussi", "as / also"], ["que", "than / that"], ["meilleur / meilleure", "better"], ["pire", "worse"], ["pareil / pareille", "same / similar"], ["différent / différente", "different"], ["grand / grande", "big / tall"], ["petit / petite", "small / short"], ["rapide", "fast"], ["lent / lente", "slow"], ["facile", "easy"], ["difficile", "difficult"], ["cher / chère", "expensive"], ["pratique", "practical"]], "phrases": [["C'est plus facile que je pensais.", "It's easier than I thought."], ["Cette option est moins chère.", "This option is less expensive."], ["Les deux sont pareils.", "The two are the same."], ["Je préfère le premier.", "I prefer the first one."]], "speaking": "Compare two cities, two games, two artists, or two outfits using at least six comparisons."}, {"theme": "Emotions & personality", "cefr": "A2", "grammar_title": "Être / se sentir + adjectives", "grammar": "Use être for descriptions and se sentir for how someone feels at a moment.", "examples": ["Je suis calme.", "Je me sens nerveuse.", "Elle est très drôle."], "vocab": [["heureux / heureuse", "happy"], ["triste", "sad"], ["nerveux / nerveuse", "nervous"], ["calme", "calm"], ["stressé / stressée", "stressed"], ["excité / excitée", "excited"], ["fier / fière", "proud"], ["timide", "shy"], ["drôle", "funny"], ["sérieux / sérieuse", "serious"], ["gentil / gentille", "kind"], ["patient / patiente", "patient"], ["confiant / confiante", "confident"], ["humeur", "mood"], ["se sentir", "to feel"], ["caractère", "personality"]], "phrases": [["Je me sens bien aujourd'hui.", "I feel good today."], ["Elle est très gentille.", "She is very kind."], ["Je suis un peu nerveuse.", "I'm a little nervous."], ["Ça me rend heureuse.", "That makes me happy."]], "speaking": "Describe your personality and how you feel today. Explain what affects your mood."}, {"theme": "Media & internet", "cefr": "A2", "grammar_title": "Relative pronouns: qui / que", "grammar": "Use qui as the subject of a relative clause and que as the object.", "examples": ["C'est une chanson qui me plaît.", "Le film que j'ai vu était bon.", "La personne qui parle est drôle."], "vocab": [["internet", "internet"], ["réseau social", "social network"], ["message", "message"], ["photo", "photo"], ["vidéo", "video"], ["compte", "account"], ["abonné / abonnée", "follower / subscriber"], ["publier", "to post"], ["partager", "to share"], ["envoyer", "to send"], ["recevoir", "to receive"], ["suivre", "to follow"], ["commentaire", "comment"], ["actualité", "news / current events"], ["épisode", "episode"], ["contenu", "content"]], "phrases": [["Je t'ai envoyé un message.", "I sent you a message."], ["C'est une vidéo qui me fait rire.", "It's a video that makes me laugh."], ["Le film que j'ai vu était excellent.", "The movie I saw was excellent."], ["Tu as vu mon message ?", "Did you see my message?"]], "speaking": "Describe a show, creator, or online community you like using qui and que."}, {"theme": "City life & services", "cefr": "A2", "grammar_title": "Commands: imperative", "grammar": "The imperative gives instructions and commands. Learn common useful forms as chunks.", "examples": ["Attendez ici.", "Prenez la deuxième rue.", "Regarde !"], "vocab": [["poste", "post office"], ["mairie", "city hall"], ["bibliothèque", "library"], ["commissariat", "police station"], ["station-service", "gas station"], ["supermarché", "supermarket"], ["quartier", "neighborhood"], ["centre-ville", "downtown"], ["ouvrir", "to open"], ["fermer", "to close"], ["attendre", "to wait"], ["chercher", "to look for"], ["trouver", "to find"], ["demander", "to ask"], ["aider", "to help"], ["service", "service"]], "phrases": [["Excusez-moi, je cherche la poste.", "Excuse me, I'm looking for the post office."], ["Attendez ici, s'il vous plaît.", "Wait here, please."], ["Prenez la deuxième rue à gauche.", "Take the second street on the left."], ["À quelle heure ça ferme ?", "What time does it close?"]], "speaking": "Ask for help finding a place, then give someone directions to a public service."}, {"theme": "Friendship & relationships", "cefr": "A2", "grammar_title": "Direct object pronouns", "grammar": "Use me, te, le/la, nous, vous, les before the conjugated verb to avoid repeating a noun.", "examples": ["Je la connais.", "Il m'appelle.", "Nous les voyons souvent."], "vocab": [["ami / amie", "friend"], ["relation", "relationship"], ["rencontrer", "to meet"], ["connaître", "to know"], ["appeler", "to call"], ["aider", "to help"], ["faire confiance", "to trust"], ["se disputer", "to argue"], ["pardonner", "to forgive"], ["manquer", "to miss"], ["proche", "close"], ["ensemble", "together"], ["célibataire", "single"], ["couple", "couple"], ["soutenir", "to support"], ["respecter", "to respect"]], "phrases": [["Je la connais depuis longtemps.", "I've known her for a long time."], ["Il m'appelle souvent.", "He calls me often."], ["Mes amis me soutiennent.", "My friends support me."], ["On s'entend bien.", "We get along well."]], "speaking": "Describe a friendship or relationship that matters to you without naming private details."}, {"theme": "Storytelling", "cefr": "A2", "grammar_title": "Sequence connectors", "grammar": "Use d'abord, ensuite, puis, après, pendant, enfin, finalement to organize a story.", "examples": ["D'abord, je suis sortie.", "Ensuite, on a mangé.", "Finalement, je suis rentrée."], "vocab": [["d'abord", "first"], ["ensuite", "next"], ["puis", "then"], ["après", "after"], ["avant", "before"], ["pendant", "during"], ["enfin", "finally"], ["finalement", "in the end"], ["soudain", "suddenly"], ["alors", "so / then"], ["histoire", "story"], ["événement", "event"], ["moment", "moment"], ["arriver", "to happen / arrive"], ["continuer", "to continue"], ["terminer", "to end"]], "phrases": [["D'abord, tout allait bien.", "At first, everything was fine."], ["Puis, quelque chose est arrivé.", "Then something happened."], ["Pendant ce temps…", "Meanwhile…"], ["Finalement, tout s'est bien passé.", "In the end, everything went well."]], "speaking": "Tell a 60–90 second story using at least five sequence connectors."}, {"theme": "Problems & requests", "cefr": "A2", "grammar_title": "Polite requests + conditional", "grammar": "Use est-ce que vous pourriez…, pourriez-vous…, and j'aimerais… to make polite requests.", "examples": ["Pourriez-vous m'aider ?", "J'aimerais changer de chambre.", "Est-ce que vous pourriez répéter ?"], "vocab": [["problème", "problem"], ["erreur", "error"], ["cassé / cassée", "broken"], ["perdu / perdue", "lost"], ["retard", "delay"], ["annulé / annulée", "canceled"], ["aide", "help"], ["solution", "solution"], ["rembourser", "to refund"], ["changer", "to change"], ["réparer", "to repair"], ["expliquer", "to explain"], ["répéter", "to repeat"], ["comprendre", "to understand"], ["possible", "possible"], ["désolé / désolée", "sorry"]], "phrases": [["J'ai un problème.", "I have a problem."], ["Pourriez-vous m'aider ?", "Could you help me?"], ["Je n'ai pas compris.", "I didn't understand."], ["Est-ce qu'il est possible de changer ?", "Is it possible to change?"]], "speaking": "Role-play solving a problem at a hotel, store, station, or restaurant."}, {"theme": "Conversational French", "cefr": "A2", "grammar_title": "Spoken connectors & fillers", "grammar": "Real conversation uses fillers and connectors. Learn them as meaning-and-tone chunks, not as literal translations.", "examples": ["Bah, je sais pas.", "Du coup, on est partis.", "Bref, c'était sympa."], "vocab": [["bah", "well / uh"], ["ben", "well"], ["genre", "like / kind of"], ["bref", "anyway / long story short"], ["du coup", "so / as a result"], ["en fait", "actually"], ["quand même", "still / even so"], ["voilà", "there you go / that's it"], ["bon", "well / okay"], ["alors", "so / then"], ["franchement", "honestly / frankly"], ["grave", "totally / seriously (slang)"], ["truc", "thing / stuff"], ["machin", "thingamajig"], ["ça marche", "that works / okay"], ["t'inquiète", "don't worry"]], "phrases": [["Bah, j'en sais rien.", "Well, I have no idea."], ["Du coup, on fait quoi ?", "So, what are we doing?"], ["Ça marche !", "Sounds good!"], ["T'inquiète, ça va aller.", "Don't worry, it'll be okay."]], "speaking": "Retell a casual story using at least four conversational connectors without overusing them."}, {"theme": "Francophone culture & variation", "cefr": "A2", "grammar_title": "Register: tu vs vous", "grammar": "French changes by region and situation. Practice choosing tu/vous and recognizing that vocabulary and pronunciation can vary.", "examples": ["Tu vas bien ?", "Vous allez bien ?", "On se tutoie ?"], "vocab": [["francophone", "French-speaking"], ["France", "France"], ["Québec", "Quebec"], ["Belgique", "Belgium"], ["Suisse", "Switzerland"], ["Afrique", "Africa"], ["accent", "accent"], ["expression", "expression"], ["registre", "register"], ["familier", "informal"], ["formel / formelle", "formal"], ["culture", "culture"], ["région", "region"], ["langue", "language"], ["tutoyer", "to use tu"], ["vouvoyer", "to use vous"]], "phrases": [["On peut se tutoyer ?", "Can we use tu with each other?"], ["Vous parlez français ?", "Do you speak French?"], ["Cette expression est familière.", "That expression is informal."], ["Le français varie selon les régions.", "French varies by region."]], "speaking": "Explain when you'd use tu versus vous and mention two Francophone places you'd like to learn more about."}, {"theme": "Consolidation & B1 bridge", "cefr": "A2→B1", "grammar_title": "Connecting ideas", "grammar": "Combine cause, contrast, sequence and opinion structures so you can speak in longer connected turns.", "examples": ["Je préfère ça parce que c'est plus pratique.", "Même si c'est difficile, je continue.", "D'abord…, ensuite…, finalement…"], "vocab": [["même si", "even if / even though"], ["pourtant", "however"], ["donc", "therefore / so"], ["car", "because / for"], ["puisque", "since / because"], ["malgré", "despite"], ["pendant que", "while"], ["depuis", "since / for"], ["encore", "still / again"], ["déjà", "already"], ["presque", "almost"], ["surtout", "especially"], ["environ", "about / approximately"], ["plutôt", "rather"], ["cependant", "however"], ["en revanche", "on the other hand"]], "phrases": [["Même si c'est difficile, je continue.", "Even though it's difficult, I keep going."], ["Je comprends beaucoup mieux qu'avant.", "I understand much better than before."], ["Pourtant, j'ai encore besoin de pratiquer.", "However, I still need to practice."], ["Mon prochain objectif est de parler plus naturellement.", "My next goal is to speak more naturally."]], "speaking": "Give a two-minute progress reflection entirely in French: what improved, what is still hard, and your next goal."}];
+
+const DAY_TYPES = [
+  {name:'Launch', focus:'Learn the first half of the unit vocabulary and use the core phrases.'},
+  {name:'Build', focus:'Learn the second half of the vocabulary and strengthen listening.'},
+  {name:'Produce', focus:'Use the grammar pattern actively in your own sentences.'},
+  {name:'Read', focus:'Build comprehension from connected French rather than isolated words.'},
+  {name:'Speak', focus:'Prioritize retrieval, dictation and spontaneous speaking.'},
+  {name:'Checkpoint', focus:'Review the whole unit and prove what you can retrieve without hints.'}
+];
+
+const MILESTONES = [
+  [30,'A1 foundation','Introduce yourself, ask basic questions, handle core survival phrases.'],
+  [60,'A1 core','Talk about routines, food, places, shopping and preferences.'],
+  [90,'Strong A1','Sustain short everyday exchanges and understand familiar speech.'],
+  [120,'Early A2','Talk about past events, future plans, opinions and comparisons.'],
+  [150,'A2','Handle broader everyday situations and longer connected answers.'],
+  [180,'Strong A2 / B1 bridge','Tell stories, solve problems, follow conversation better and keep building toward B1.']
+];
+
+const V3_UNIT_EXTRAS = [[["ça va", "how are you / it's going"], ["prénom", "first name"], ["nom de famille", "last name"], ["venir de", "to come from"]], [["midi", "noon"], ["minuit", "midnight"], ["tôt", "early"], ["tard", "late"]], [["cousin / cousine", "cousin"], ["partenaire", "partner"], ["voisin / voisine", "neighbor"], ["collègue", "coworker / colleague"]], [["canapé", "sofa"], ["placard", "cupboard / closet"], ["étage", "floor / story"], ["balcon", "balcony"]], [["repas", "meal"], ["petit-déjeuner", "breakfast"], ["déjeuner", "lunch"], ["dîner", "dinner"]], [["se coucher", "to go to bed"], ["prendre une douche", "to take a shower"], ["commencer", "to start"], ["finir", "to finish"]], [["carrefour", "intersection"], ["en face de", "across from"], ["à côté de", "next to"], ["derrière", "behind"]], [["caisse", "checkout / register"], ["réduction", "discount"], ["rembourser", "to refund"], ["échange", "exchange"]], [["pull", "sweater"], ["manteau", "coat"], ["chaussettes", "socks"], ["confortable", "comfortable"]], [["podcast", "podcast"], ["guitare", "guitar"], ["photographie", "photography"], ["faire du sport", "to exercise / play sports"]], [["réunion", "meeting"], ["devoir", "homework / assignment"], ["cours", "class / course"], ["pause", "break"]], [["nuageux / nuageuse", "cloudy"], ["orage", "storm"], ["printemps", "spring"], ["automne", "autumn / fall"]], [["tête", "head"], ["ventre", "stomach / belly"], ["médicament", "medicine"], ["se sentir", "to feel"]], [["billet", "ticket"], ["quai", "platform"], ["retard", "delay"], ["correspondance", "connection / transfer"]], [["menu", "menu"], ["addition", "bill / check"], ["réservation", "reservation"], ["serveur / serveuse", "server"]], [["rendez-vous", "appointment / meetup"], ["disponible", "available"], ["annuler", "to cancel"], ["confirmer", "to confirm"]], [["la semaine dernière", "last week"], ["soudain", "suddenly"], ["arriver", "to arrive / happen"], ["visiter", "to visit"]], [["d'abord", "first"], ["ensuite", "next / then"], ["finalement", "finally"], ["pendant", "during / for"]], [["bientôt", "soon"], ["projet", "plan / project"], ["espérer", "to hope"], ["prévoir", "to plan / expect"]], [["à mon avis", "in my opinion"], ["être d'accord", "to agree"], ["avoir raison", "to be right"], ["intéressant / intéressante", "interesting"]], [["meilleur / meilleure", "better / best"], ["pire", "worse / worst"], ["autant", "as much / as many"], ["moins", "less / fewer"]], [["calme", "calm"], ["stressé / stressée", "stressed"], ["fier / fière", "proud"], ["timide", "shy"]], [["publier", "to post / publish"], ["télécharger", "to download"], ["compte", "account"], ["commentaire", "comment"]], [["mairie", "city hall"], ["poste", "post office"], ["bibliothèque", "library"], ["commissariat", "police station"]], [["confiance", "trust"], ["soutenir", "to support"], ["se disputer", "to argue"], ["se réconcilier", "to make up / reconcile"]], [["raconter", "to tell / recount"], ["personnage", "character"], ["début", "beginning"], ["fin", "ending"]], [["panne", "breakdown / outage"], ["perdre", "to lose"], ["réparer", "to repair"], ["solution", "solution"]], [["carrément", "totally / absolutely"], ["laisse tomber", "forget it / never mind"], ["ça dépend", "it depends"], ["pas de souci", "no problem"]], [["québécois / québécoise", "Quebecois / Quebecer"], ["belge", "Belgian"], ["suisse", "Swiss"], ["accent régional", "regional accent"]], [["en résumé", "in summary"], ["d'un côté", "on one hand"], ["de l'autre côté", "on the other hand"], ["par contre", "on the other hand / however"]]];
+V3_UNIT_EXTRAS.forEach((extra,i)=>{ if(UNITS[i] && !UNITS[i]._v3Expanded){ UNITS[i].vocab=UNITS[i].vocab.concat(extra); UNITS[i]._v3Expanded=true; }});
+const V3_PRONUNCIATION = [{"title": "French R /ʁ/", "tip": "Keep the tongue relaxed. The sound is made farther back than an English R; do not force a trill.", "pairs": ["rue — roue", "Paris — partir"], "targets": ["rue", "Paris", "Je voudrais réserver."]}, {"title": "U /y/ vs OU /u/", "tip": "For French u, keep the tongue position of “ee” while rounding the lips. For ou, use the English “oo” shape.", "pairs": ["tu — tout", "rue — roue", "dessus — dessous"], "targets": ["tu", "tout", "Tu as tout vu ?"]}, {"title": "É /e/ vs È /ɛ/", "tip": "É is tenser and more closed; è/ê is more open. Listen for the contrast rather than relying only on spelling.", "pairs": ["été — était", "mes — mais"], "targets": ["été", "mais", "J'ai été très occupée."]}, {"title": "AN / EN nasal /ɑ̃/", "tip": "Let air resonate through the nose; do not pronounce a full n at the end.", "pairs": ["sans — sa", "temps — ta"], "targets": ["sans", "enfant", "J'attends encore."]}, {"title": "ON nasal /ɔ̃/", "tip": "Round the lips slightly and keep the final n silent in the nasal vowel.", "pairs": ["bon — beau", "nom — no"], "targets": ["bon", "bonjour", "Mon nom est…"]}, {"title": "IN / AIN nasal /ɛ̃/", "tip": "Keep the vowel nasal and avoid adding an English n sound.", "pairs": ["pain — pas", "vin — va"], "targets": ["pain", "demain", "Je viens demain."]}, {"title": "Silent final consonants", "tip": "Many final consonants are silent. Learn the whole word by sound, not letter-by-letter.", "pairs": ["petit — petite", "grand — grande"], "targets": ["petit", "beaucoup", "Il est très grand."]}, {"title": "Liaison", "tip": "Some normally silent final consonants link to a following vowel sound. Treat common liaisons as chunks.", "pairs": ["les amis", "vous avez", "deux heures"], "targets": ["les amis", "vous avez", "Nous avons deux heures."]}, {"title": "Enchaînement", "tip": "When a word ends in a pronounced consonant and the next begins with a vowel, connect them smoothly.", "pairs": ["avec elle", "pour eux"], "targets": ["avec elle", "Il habite avec elle."]}, {"title": "The schwa E", "tip": "The unstressed e may be very light or disappear in casual speech. Start clear, then learn common reductions.", "pairs": ["je te — j'te", "petite — p'tite"], "targets": ["je te dis", "Je te remercie."]}, {"title": "OI /wa/", "tip": "French oi usually sounds like “wah,” not like the English word “oy.”", "pairs": ["moi — mois", "toi — toit"], "targets": ["moi", "trois", "Tu viens avec moi ?"]}, {"title": "EU / Ø / Œ", "tip": "French eu/œu has rounded front-vowel qualities. Copy the voice and focus on lip shape.", "pairs": ["peu — peur", "deux — sœur"], "targets": ["deux", "peur", "Je veux deux cafés."]}, {"title": "GN /ɲ/", "tip": "GN is similar to the “ny” in canyon.", "pairs": ["ligne", "montagne"], "targets": ["ligne", "Espagne", "La montagne est magnifique."]}, {"title": "ILL / glide /j/", "tip": "In many words, -ill- produces a y-like glide. Learn exceptions as complete words.", "pairs": ["fille", "famille"], "targets": ["fille", "famille", "Ma famille habite ici."]}, {"title": "J /ʒ/ vs CH /ʃ/", "tip": "J is voiced; ch is unvoiced. Put a hand on your throat to feel the difference.", "pairs": ["joue — chou", "Jean — champ"], "targets": ["je", "chat", "Je cherche quelque chose."]}, {"title": "S /s/ vs Z /z/", "tip": "A single s between vowels is often /z/; double ss is /s/. Listen for voicing.", "pairs": ["poison — poisson", "cousin — coussin"], "targets": ["maison", "poisson", "Nous faisons ça."]}, {"title": "Nasal vowel contrasts", "tip": "Practice nasal vowels side by side so they remain distinct rather than becoming one generic nasal sound.", "pairs": ["sans — son", "pain — pont"], "targets": ["sans", "son", "un bon pain"]}, {"title": "French rhythm", "tip": "French rhythm groups words into phrases with relatively even syllables and emphasis near the end of the group.", "pairs": ["Je voudrais | un café.", "On se retrouve | à huit heures."], "targets": ["Je voudrais un café.", "On se retrouve à huit heures."]}, {"title": "Question intonation", "tip": "Casual yes/no questions often keep normal word order and use rising intonation.", "pairs": ["Tu viens.", "Tu viens ?"], "targets": ["Tu viens ?", "Ça va ?", "Tu veux sortir ce soir ?"]}, {"title": "Contractions and elision", "tip": "French regularly drops a vowel before another vowel: je → j', le/la → l', ne → n'.", "pairs": ["je aime → j'aime", "le ami → l'ami"], "targets": ["j'aime", "l'école", "Je n'ai pas compris."]}, {"title": "H muet vs h aspiré", "tip": "Some h words allow elision/liaison and others block it. Learn common words as chunks.", "pairs": ["l'hôtel", "le héros"], "targets": ["l'hôtel", "les hôtels", "Le héros arrive."]}, {"title": "Numbers in connected speech", "tip": "Numbers change sound in common combinations. Practice them inside times, ages, prices and dates.", "pairs": ["deux amis", "six euros", "huit heures"], "targets": ["deux amis", "six euros", "Il est huit heures."]}, {"title": "PLUS: /ply/, /plys/ or /plyz/", "tip": "Plus changes pronunciation depending on meaning and context. Learn frequent phrases instead of one rule.", "pairs": ["plus grand", "plus encore", "plus intéressant"], "targets": ["plus grand", "Je n'en veux plus.", "C'est plus intéressant."]}, {"title": "Casual spoken reductions", "tip": "Understand reductions before trying to imitate them. Keep your own speech clear, then add natural shortcuts gradually.", "pairs": ["je ne sais pas → j'sais pas", "tu es → t'es"], "targets": ["je sais pas", "t'es prêt ?", "Y a un problème."]}];
+
+const V3_DOMAINS=['vocabulary','production','listening','pronunciation','grammar','reading','speaking'];
+const V3_SESSION_META={
+  quick:{label:'Quick 10',minutes:10,maxTasks:3},
+  standard:{label:'Standard 25',minutes:25,maxTasks:5},
+  deep:{label:'Deep 45',minutes:45,maxTasks:8}
+};
+function buildV3DayCurriculum(){
+  const missions=[
+    ['Notice + retrieve','Meet the core language, then retrieve it once without looking.'],
+    ['Hear + connect','Add new language and connect written French to sound.'],
+    ['Build + produce','Turn the unit grammar into sentences about your own life.'],
+    ['Read + infer','Understand connected French before translating individual words.'],
+    ['Speak + repair','Speak from memory, notice gaps, and repair them with focused review.'],
+    ['Prove + reflect','Use the unit without hints, then choose the next weak skill to strengthen.']
+  ];
+  const days=[];
+  UNITS.forEach((u,ui)=>{
+    for(let d=1;d<=6;d++){
+      const absolute=ui*6+d;
+      const chunk=Math.ceil(u.vocab.length/4);
+      const start=((d-1)%4)*chunk;
+      const newItems=(d<=4?u.vocab.slice(start,start+chunk):u.vocab.slice((absolute+d)%Math.max(1,u.vocab.length-4),(absolute+d)%Math.max(1,u.vocab.length-4)+4));
+      const phrase=u.phrases[(d-1)%u.phrases.length];
+      const listen=(d%2?u.phrases[d%u.phrases.length][0]:u.examples[d%u.examples.length]);
+      const reading=[u.examples[(d-1)%u.examples.length],u.phrases[(d+1)%u.phrases.length][0],u.examples[(d)%u.examples.length]].join(' ');
+      const retrieve=newItems.slice(0,3).map(x=>x[0]).join(', ') || u.vocab.slice(0,3).map(x=>x[0]).join(', ');
+      const pron=V3_PRONUNCIATION[(absolute-1)%V3_PRONUNCIATION.length];
+      days.push({
+        day:absolute,unit:ui,unitDay:d,title:'Day '+absolute+' — '+u.theme+' · '+DAY_TYPES[d-1].name,
+        mission:missions[d-1][0],goal:missions[d-1][1],
+        retrieval:'Retrieve '+retrieve+' from memory, then use at least one in a full sentence.',
+        listening:'Reconstruct: “'+listen+'” using the slow → normal → natural+ ladder.',
+        pronunciation:pron.title,
+        phrase:phrase,dictation:listen,reading:reading,
+        micro:d===1?'Say the daily phrase once without looking.':
+              d===2?'Use two new words in one sentence.':
+              d===3?'Make the grammar example true about your life.':
+              d===4?'Read once for gist before translating anything.':
+              d===5?'Speak for 45 seconds, then repair one gap.':
+              'Choose one miss from the checkpoint and recover it twice.'
+      });
+    }
+  });
+  return days;
+}
+const V3_DAYS=buildV3DayCurriculum();
+function currentV3Day(){ return V3_DAYS[Math.max(0,Math.min(179,state.day-1))]; }
+
+const STORAGE_KEY = 'french180pro_v2';
+const SRS_VERSION = 30;
+const MINUTE = 60000;
+const DAY_MS = 86400000;
+
+function defaultState(){
+  return {
+    version:3.01, srsVersion:SRS_VERSION, day:1, xp:0, streak:0, lastComplete:null,
+    completedDays:[], cards:{}, journals:{}, speaking:{}, grammar:{}, reading:{},
+    quizCorrect:0, quizTotal:0, reviewCorrect:0, reviewTotal:0,
+    settings:{rate:0.85,theme:'calm',sessionMode:'standard',energy:'medium',fontScale:1,spacing:'normal',reducedMotion:true,contrast:'normal',lowStim:false,gentleMomentum:true,showXP:true},
+    activity:{}, customCards:[], unitTests:{}, mistakes:{}, skillHistory:{}, cefrAssessments:{}, focus:{day:1,step:0,done:[],skipped:[],active:false}, resume:{view:'today',label:'Start today’s lesson'}, sessionHistory:{}
+  };
+}
+
+let state = loadLocal();
+let todayDeck = [];
+let todayDeckIndex = 0;
+let todayCardMode = 'recognition';
+let reviewDeck = [];
+let reviewDeckIndex = 0;
+let reviewCardMode = 'recognition';
+let rapidTarget = null;
+let unitTest = null;
+let scenarioTurn = 0;
+let activeMistakeKey = null;
+
+function loadLocal(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultState();
+    return migrateState(JSON.parse(raw));
+  }catch(e){ return defaultState(); }
+}
+
+function migrateState(s){
+  const d = defaultState();
+  const out = Object.assign(d,s,{
+    version:3.01,srsVersion:SRS_VERSION,
+    settings:Object.assign(d.settings,s.settings||{}),
+    cards:s.cards||{},completedDays:s.completedDays||[],journals:s.journals||{},
+    speaking:s.speaking||{},grammar:s.grammar||{},reading:s.reading||{},
+    activity:s.activity||{},customCards:s.customCards||[],unitTests:s.unitTests||{},
+    mistakes:s.mistakes||{}, skillHistory:s.skillHistory||{}, cefrAssessments:s.cefrAssessments||{}, focus:Object.assign(d.focus,s.focus||{}), resume:Object.assign(d.resume,s.resume||{}), sessionHistory:s.sessionHistory||{}
+  });
+  Object.values(out.cards).forEach(upgradeCard);
+  return out;
+}
+
+function saveLocal(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+  renderStats();
+}
+
+function todayKey(){
+  const d=new Date();
+  return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+}
+function addDaysKey(days){
+  const d=new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()+days);
+  return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+}
+function oldDueToMs(due){
+  if(!due)return Date.now();
+  const t=new Date(due+'T09:00:00').getTime();
+  return Number.isFinite(t)?t:Date.now();
+}
+function newSkill(kind,legacy){
+  const oldInterval=Math.max(0,Number(legacy?.interval||0));
+  const isRecognition=kind==='recognition';
+  return {
+    active:isRecognition,
+    attempts:isRecognition?Number(legacy?.seen||legacy?.reps||0):0,
+    correct:isRecognition?Number(legacy?.correct||0):0,
+    lapses:isRecognition?Number(legacy?.lapses||0):0,
+    stability:Math.max(.6,oldInterval||.6),
+    difficulty:Math.max(1,Math.min(10,5+(Number(legacy?.lapses||0)*.25))),
+    dueAt:isRecognition?oldDueToMs(legacy?.due):Date.now()+4*60*MINUTE,
+    lastReview:legacy?.last?new Date(legacy.last+'T12:00:00').getTime():null,
+    lastRating:null
+  };
+}
+function upgradeCard(c){
+  if(!c.skills){
+    c.skills={recognition:newSkill('recognition',c),production:newSkill('production',c)};
+    if((c.correct||0)>0)c.skills.production.active=true;
+  } else {
+    ['recognition','production'].forEach(mode=>{
+      if(!c.skills[mode])c.skills[mode]=newSkill(mode,c);
+      const x=c.skills[mode];
+      x.active=mode==='recognition'?true:Boolean(x.active);
+      x.attempts=Number(x.attempts||0);x.correct=Number(x.correct||0);x.lapses=Number(x.lapses||0);
+      x.stability=Math.max(.25,Number(x.stability||.6));
+      x.difficulty=Math.max(1,Math.min(10,Number(x.difficulty||5)));
+      x.dueAt=Number(x.dueAt||Date.now());
+    });
+  }
+  syncCardSummary(c);
+  return c;
+}
+function syncCardSummary(c){
+  const active=Object.values(c.skills||{}).filter(x=>x.active);
+  c.dueAt=Math.min(...active.map(x=>Number(x.dueAt||Date.now())));
+  c.due=new Date(c.dueAt).toISOString().slice(0,10);
+  c.interval=Math.round(Math.max(...active.map(x=>Number(x.stability||0))));
+  c.reps=active.reduce((n,x)=>n+x.attempts,0);
+  c.seen=c.reps;
+  c.correct=active.reduce((n,x)=>n+x.correct,0);
+  c.lapses=active.reduce((n,x)=>n+x.lapses,0);
+  return c;
+}
+function skillAccuracy(skill){ return skill?.attempts?skill.correct/skill.attempts:0; }
+function skillMastery(skill){
+  if(!skill||!skill.active||!skill.attempts)return 0;
+  const accuracy=skillAccuracy(skill);
+  const retention=Math.min(1,Math.log2((skill.stability||.25)+1)/5.5);
+  return Math.round(Math.min(100,accuracy*72+retention*28));
+}
+function aggregateMastery(mode){
+  const xs=Object.values(state.cards).map(upgradeCard).map(c=>c.skills[mode]).filter(x=>x?.active&&x.attempts);
+  if(!xs.length)return null;
+  return Math.round(xs.reduce((n,x)=>n+skillMastery(x),0)/xs.length);
+}
+
+function unitIndex(){ return Math.min(29,Math.floor((state.day-1)/6)); }
+function unitDay(){ return ((state.day-1)%6)+1; }
+function unit(){ return UNITS[unitIndex()]; }
+function dayType(){ return DAY_TYPES[unitDay()-1]; }
+function currentPhrase(){ return unit().phrases[(unitDay()-1)%unit().phrases.length]; }
+
+function cardId(ui,vi){ return 'u'+ui+'v'+vi; }
+function ensureCard(ui,vi){
+  const id=cardId(ui,vi), pair=UNITS[ui].vocab[vi];
+  if(!state.cards[id]){
+    state.cards[id]={id,front:pair[0],back:pair[1],unit:ui,skills:{recognition:newSkill('recognition'),production:newSkill('production')}};
+  }
+  return upgradeCard(state.cards[id]);
+}
+
+function ensureCustomCards(){
+  state.customCards.forEach((x,i)=>{
+    const id='custom'+i;
+    if(!state.cards[id]) state.cards[id]={id,front:x.front,back:x.back,unit:-1,skills:{recognition:newSkill('recognition'),production:newSkill('production')}};
+    upgradeCard(state.cards[id]);
+  });
+}
+
+function introduceForToday(){
+  const ui=unitIndex(), ud=unitDay(), count=UNITS[ui].vocab.length;
+  let idx=[];
+  if(ud===1) idx=[...Array(Math.ceil(count/2)).keys()];
+  if(ud===2) idx=[...Array(count-Math.ceil(count/2)).keys()].map(i=>i+Math.ceil(count/2));
+  if(ud>=3) idx=[...Array(count).keys()];
+  idx.forEach(i=>ensureCard(ui,i));
+  ensureCustomCards();
+}
+
+function cardDueAt(c){ upgradeCard(c); return c.dueAt||Date.now(); }
+function dueCards(limit=30){
+  const now=Date.now();
+  return Object.values(state.cards).map(upgradeCard)
+    .filter(c=>cardDueAt(c)<=now)
+    .sort((a,b)=>{
+      if(cardDueAt(a)!==cardDueAt(b))return cardDueAt(a)-cardDueAt(b);
+      return (b.lapses-a.lapses)||(a.reps-b.reps);
+    }).slice(0,limit);
+}
+function dueModeForCard(c){
+  upgradeCard(c);const now=Date.now();
+  const due=['recognition','production'].filter(m=>c.skills[m].active&&c.skills[m].dueAt<=now)
+    .sort((a,b)=>c.skills[a].dueAt-c.skills[b].dueAt);
+  if(due.length)return due[0];
+  const r=c.skills.recognition,p=c.skills.production;
+  if(r.attempts<2)return 'recognition';
+  if(!p.active)return 'recognition';
+  if(p.attempts<2)return 'production';
+  const rm=skillMastery(r),pm=skillMastery(p);
+  if(pm+5<rm)return 'production';
+  if(rm+5<pm)return 'recognition';
+  return c.lastMode==='recognition'?'production':'recognition';
+}
+function cardDisplay(c,mode){
+  return mode==='production'
+    ? {front:c.back,back:c.front,label:'Meaning → French'}
+    : {front:c.front,back:c.back,label:'French → meaning'};
+}
+
+function buildTodayDeck(){
+  introduceForToday();
+  const ui=unitIndex(), current=Object.values(state.cards).map(upgradeCard).filter(c=>c.unit===ui);
+  const due=dueCards(20);
+  const map=new Map();
+  [...due,...current].forEach(c=>map.set(c.id,c));
+  todayDeck=[...map.values()].slice(0,24);
+  todayDeckIndex=0;
+  renderTodayCard();
+}
+
+function activeCard(){ return todayDeck[todayDeckIndex]||null; }
+function activeReviewCard(){ return reviewDeck[reviewDeckIndex]||null; }
+
+function renderTodayCard(){
+  const c=activeCard();
+  const box=document.getElementById('todayFlash');box.classList.remove('revealed');
+  if(!c){
+    document.getElementById('flashFr').textContent='Deck complete';
+    document.getElementById('flashEn').textContent='Great work.';
+    document.getElementById('cardCounter').textContent='';
+    document.getElementById('cardModePill').textContent='Complete';
+    return;
+  }
+  todayCardMode=dueModeForCard(c);c.lastMode=todayCardMode;
+  const d=cardDisplay(c,todayCardMode);
+  document.getElementById('flashFr').textContent=d.front;
+  document.getElementById('flashEn').textContent=d.back;
+  document.getElementById('cardModePill').textContent=d.label;
+  document.getElementById('cardCounter').textContent=(todayDeckIndex+1)+' / '+todayDeck.length;
+}
+function toggleFlash(){ document.getElementById('todayFlash').classList.toggle('revealed'); }
+
+function scheduleCard(c,rating,mode){
+  upgradeCard(c);
+  mode=mode||dueModeForCard(c);
+  const skill=c.skills[mode],now=Date.now();
+  skill.active=true;skill.attempts++;skill.lastReview=now;skill.lastRating=rating;
+  const success=rating==='good'||rating==='easy';
+  if(success)skill.correct++;
+
+  if(rating==='again'){
+    skill.lapses++;skill.difficulty=Math.min(10,skill.difficulty+.8);
+    skill.stability=Math.max(.25,skill.stability*.45);
+    skill.dueAt=now+10*MINUTE;
+  } else if(rating==='hard'){
+    skill.difficulty=Math.min(10,skill.difficulty+.25);
+    skill.stability=Math.max(.5,skill.stability*1.12);
+    skill.dueAt=now+Math.max(8*60*MINUTE,skill.stability*.65*DAY_MS);
+  } else if(rating==='good'){
+    skill.difficulty=Math.max(1,skill.difficulty-.08);
+    const growth=Math.max(1.25,1.82-skill.difficulty*.045);
+    skill.stability=Math.max(1,skill.stability*growth);
+    skill.dueAt=now+skill.stability*DAY_MS;
+  } else {
+    skill.difficulty=Math.max(1,skill.difficulty-.3);
+    const growth=Math.max(1.55,2.65-skill.difficulty*.05);
+    skill.stability=Math.max(3,skill.stability*growth);
+    skill.dueAt=now+skill.stability*1.15*DAY_MS;
+  }
+
+  if(mode==='recognition'&&success&&!c.skills.production.active){
+    c.skills.production.active=true;
+    c.skills.production.dueAt=Math.min(c.skills.production.dueAt||Infinity,now+4*60*MINUTE);
+  }
+  c.lastMode=mode;
+  syncCardSummary(c);
+}
+
+function logCardFailure(c,mode,source){
+  const d=cardDisplay(c,mode);
+  logMistake(mode==='production'?'vocabulary-production':'vocabulary-recognition',d.front,d.back,'Self-rated: Again',source||'SRS',c.id);
+}
+
+function rateActive(rating){
+  const c=activeCard(); if(!c)return;
+  if(rating==='again')logCardFailure(c,todayCardMode,'Today deck');
+  scheduleCard(c,rating,todayCardMode);
+  state.xp += rating==='again'?1:rating==='hard'?2:rating==='good'?3:4;
+  saveLocal();todayDeckIndex++;renderTodayCard();renderStats();renderMistakes();
+}
+
+function buildReviewDeck(){
+  ensureCustomCards();reviewDeck=dueCards(60);reviewDeckIndex=0;
+  renderReviewCard();renderReviewStats();
+}
+
+function renderReviewCard(){
+  const c=activeReviewCard(), empty=!c;
+  document.getElementById('reviewEmpty').classList.toggle('hidden',!empty);
+  document.getElementById('reviewPanel').classList.toggle('hidden',empty);
+  document.getElementById('reviewDuePill').textContent=reviewDeck.length+' due';
+  if(!c){document.getElementById('reviewModePill').textContent='';return;}
+  reviewCardMode=dueModeForCard(c);c.lastMode=reviewCardMode;
+  const d=cardDisplay(c,reviewCardMode);
+  const box=document.getElementById('reviewFlash');box.classList.remove('revealed');
+  document.getElementById('reviewFr').textContent=d.front;
+  document.getElementById('reviewEn').textContent=d.back;
+  document.getElementById('reviewModePill').textContent=d.label;
+}
+function toggleReviewFlash(){ document.getElementById('reviewFlash').classList.toggle('revealed'); }
+function rateReview(rating){
+  const c=activeReviewCard();if(!c)return;
+  state.reviewTotal++;
+  if(rating==='good'||rating==='easy')state.reviewCorrect++;
+  if(rating==='again')logCardFailure(c,reviewCardMode,'Adaptive review');
+  scheduleCard(c,rating,reviewCardMode);state.xp+=rating==='again'?1:rating==='hard'?2:rating==='good'?3:4;
+  saveLocal();reviewDeckIndex++;renderReviewCard();renderReviewStats();renderProgress();renderMistakes();
+}
+
+function renderReviewStats(){
+  const cs=Object.values(state.cards).map(upgradeCard);
+  document.getElementById('reviewLearning').textContent=cs.filter(c=>Math.max(skillMastery(c.skills.recognition),skillMastery(c.skills.production))<70).length;
+  document.getElementById('reviewMature').textContent=cs.filter(c=>skillMastery(c.skills.recognition)>=80&&(!c.skills.production.active||skillMastery(c.skills.production)>=75)).length;
+  document.getElementById('reviewLapses').textContent=cs.reduce((a,c)=>a+(c.lapses||0),0);
+  document.getElementById('reviewAccuracy').textContent=state.reviewTotal?Math.round(state.reviewCorrect/state.reviewTotal*100)+'%':'—';
+  const r=aggregateMastery('recognition'),p=aggregateMastery('production');
+  document.getElementById('reviewRecognition').textContent=r==null?'—':r+'%';
+  document.getElementById('reviewProduction').textContent=p==null?'—':p+'%';
+}
+
+function hashString(s){
+  let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0).toString(36);
+}
+function mistakeKey(type,prompt,expected){return 'm'+hashString([type,normalizeFrench(prompt),normalizeFrench(expected)].join('|'));}
+function mistakeCategory(type){
+  if(type.startsWith('vocabulary'))return 'vocabulary';
+  if(type==='dictation')return 'listening';
+  if(type==='rapid-translation')return 'translation';
+  if(type==='quiz'||type==='checkpoint')return 'quiz';
+  return type;
+}
+function logMistake(type,prompt,expected,userAnswer,source,cardId){
+  const key=mistakeKey(type,prompt,expected),now=Date.now();
+  let m=state.mistakes[key];
+  if(!m)m=state.mistakes[key]={key,type,category:mistakeCategory(type),prompt,expected,source:source||'',cardId:cardId||null,count:0,firstAt:now,lastAt:now,lastAnswer:'',resolved:false,recoveryCorrect:0,reopened:0};
+  if(m.resolved){m.resolved=false;m.reopened=(m.reopened||0)+1;m.recoveryCorrect=0;}
+  m.count++;m.lastAt=now;m.lastAnswer=userAnswer||'';m.source=source||m.source;
+  return m;
+}
+function mistakePriority(m){
+  const ageDays=(Date.now()-m.lastAt)/DAY_MS;
+  return (m.resolved?-1000:0)+(m.count*12)+(m.reopened*18)-Math.min(10,ageDays);
+}
+function filteredMistakes(){
+  const filter=document.getElementById('mistakeFilter')?.value||'open',sort=document.getElementById('mistakeSort')?.value||'priority';
+  let list=Object.values(state.mistakes||{});
+  if(filter==='open')list=list.filter(m=>!m.resolved);
+  else if(filter==='resolved')list=list.filter(m=>m.resolved);
+  else if(filter==='recurring')list=list.filter(m=>!m.resolved&&(m.count>=2||m.reopened>0));
+  else if(filter!=='all')list=list.filter(m=>m.category===filter);
+  list.sort(sort==='recent'?(a,b)=>b.lastAt-a.lastAt:sort==='frequent'?(a,b)=>b.count-a.count:(a,b)=>mistakePriority(b)-mistakePriority(a));
+  return list;
+}
+function renderMistakes(){
+  if(!document.getElementById('mistakeList'))return;
+  const all=Object.values(state.mistakes||{}),open=all.filter(m=>!m.resolved),rec=open.filter(m=>m.count>=2||m.reopened>0),recovered=all.filter(m=>m.resolved);
+  document.getElementById('mistakeOpen').textContent=open.length;
+  document.getElementById('mistakeRecurring').textContent=rec.length;
+  document.getElementById('mistakeRecovered').textContent=recovered.length;
+  document.getElementById('mistakeTotalEvents').textContent=all.reduce((n,m)=>n+m.count,0);
+  const list=filteredMistakes();document.getElementById('mistakeListCount').textContent=list.length+' item'+(list.length===1?'':'s');
+  document.getElementById('mistakeList').innerHTML=list.length?list.map(m=>{
+    const when=new Date(m.lastAt).toLocaleDateString();
+    return '<div class="task"><div class="spread"><div><span class="pill">'+escapeHtml(m.category)+'</span> '+(m.count>=2?'<span class="pill">'+m.count+'×</span>':'')+(m.resolved?'<span class="pill">Recovered</span>':'')+'<strong style="display:block;margin-top:6px">'+escapeHtml(m.prompt)+'</strong><span class="small muted">Expected: '+escapeHtml(m.expected)+'</span>'+(m.lastAnswer?'<span class="small muted">Last answer: '+escapeHtml(m.lastAnswer)+'</span>':'')+'<span class="small muted">'+escapeHtml(m.source||'Practice')+' • '+when+'</span></div><div class="row"><button class="secondary" onclick="practiceMistake(\''+m.key+'\')">Practice</button><button class="ghost" onclick="toggleMistakeResolved(\''+m.key+'\')">'+(m.resolved?'Reopen':'Resolve')+'</button></div></div></div>';
+  }).join(''):'<div class="notice">No mistakes match this filter. That is a very pleasant problem to have.</div>';
+}
+function toggleMistakeResolved(key){const m=state.mistakes[key];if(!m)return;m.resolved=!m.resolved;if(m.resolved)m.recoveryCorrect=Math.max(2,m.recoveryCorrect||0);else m.recoveryCorrect=0;saveLocal();renderMistakes();}
+function practiceMistake(key){
+  const m=state.mistakes[key];if(!m)return;activeMistakeKey=key;
+  document.getElementById('mistakePracticeEmpty').classList.add('hidden');document.getElementById('mistakePracticePanel').classList.remove('hidden');
+  document.getElementById('mistakePracticeType').textContent=m.category;
+  document.getElementById('mistakePracticePrompt').textContent=m.prompt;
+  document.getElementById('mistakePracticeAnswer').value='';document.getElementById('mistakePracticeFeedback').textContent='';
+}
+function checkMistakePractice(){
+  const m=state.mistakes[activeMistakeKey];if(!m)return;
+  const a=document.getElementById('mistakePracticeAnswer').value.trim(),s=similarity(a,m.expected),el=document.getElementById('mistakePracticeFeedback');
+  if(s>=.88){m.recoveryCorrect=(m.recoveryCorrect||0)+1;state.xp+=4;if(m.recoveryCorrect>=2){m.resolved=true;el.innerHTML='<span class="success">Recovered.</span> You retrieved it correctly twice.';}else el.innerHTML='<span class="success">Correct.</span> One more clean retrieval will mark it recovered.';}
+  else{m.recoveryCorrect=0;m.count++;m.lastAt=Date.now();m.lastAnswer=a;el.innerHTML='Target: <strong>'+escapeHtml(m.expected)+'</strong>. Try again from memory.';}
+  saveLocal();renderMistakes();
+}
+function speakMistakeExpected(){const m=state.mistakes[activeMistakeKey];if(m)speakText(m.expected);}
+
+function speakText(text){
+  if(!text)return;
+  if(!('speechSynthesis' in window)){alert('Your browser does not support text-to-speech.');return;}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='fr-FR';u.rate=Number(state.settings.rate||0.85);
+  const voices=speechSynthesis.getVoices();
+  const fr=voices.find(v=>/^fr(-|_)/i.test(v.lang))||voices.find(v=>/French/i.test(v.name));
+  if(fr)u.voice=fr;
+  speechSynthesis.speak(u);
+}
+
+function normalizeFrench(s){
+  return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[’']/g,"'").replace(/[^a-z0-9'\s-]/g,' ').replace(/\s+/g,' ').trim();
+}
+function levenshtein(a,b){
+  a=normalizeFrench(a);b=normalizeFrench(b);
+  const m=a.length,n=b.length,d=Array.from({length:m+1},()=>Array(n+1).fill(0));
+  for(let i=0;i<=m;i++)d[i][0]=i;for(let j=0;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  return d[m][n];
+}
+function similarity(a,b){
+  const x=normalizeFrench(a),y=normalizeFrench(b);if(!x&&!y)return 1;
+  return 1-levenshtein(x,y)/Math.max(1,x.length,y.length);
+}
+
+function recognitionAvailable(){ return !!(window.SpeechRecognition||window.webkitSpeechRecognition); }
+async function recognizeFrench(callback){
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!window.isSecureContext){callback(null,'Microphone practice requires HTTPS. Open the published github.io site.');return;}
+  if(!R){callback(null,'Speech recognition is not available in this browser. Current Chrome or Edge is recommended.');return;}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){callback(null,'This browser does not expose microphone permission controls.');return;}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    stream.getTracks().forEach(t=>t.stop());
+  }catch(err){callback(null,micErrorMessage(err));return;}
+  const r=new R();r.lang='fr-FR';r.interimResults=false;r.maxAlternatives=3;
+  r.onresult=e=>callback(e.results[0][0].transcript,null);
+  r.onerror=e=>{
+    const map={
+      'not-allowed':'Microphone permission was denied or blocked. Allow Microphone in the browser site controls and reload.',
+      'service-not-allowed':'The browser speech-recognition service is blocked. Try Chrome/Edge, disable restrictive browser extensions, or use typed practice.',
+      'no-speech':'I did not hear speech. Try again and speak a little closer to the microphone.',
+      'audio-capture':'The browser could not capture microphone audio. Check your selected input device.',
+      'network':'Speech recognition needs an internet connection in this browser.'
+    };
+    callback(null,map[e.error]||('Speech recognition error: '+e.error));
+  };
+  try{r.start();}catch(err){callback(null,'Could not start speech recognition: '+err.message);}
+}
+function startSpeechCheck(target){
+  const el=document.getElementById('speechFeedback');el.textContent='Listening…';
+  recognizeFrench((heard,err)=>{
+    if(err){el.textContent=err;return;}
+    const s=similarity(heard,target);
+    el.innerHTML='Heard: <strong>'+escapeHtml(heard)+'</strong><br>Text match: '+Math.round(s*100)+'%. This checks recognized words, not your accent quality.';
+  });
+}
+function startFreeSpeech(){
+  const el=document.getElementById('freeSpeechFeedback');el.textContent='Listening…';
+  recognizeFrench((heard,err)=>{
+    if(err){el.textContent=err;return;}
+    el.innerHTML='I heard: <strong>'+escapeHtml(heard)+'</strong>. If that matches what you meant to say, your speech was recognized successfully.';
+  });
+}
+
+function currentDictation(){ return unit().phrases[(unitDay()+1)%unit().phrases.length][0]; }
+function playDictation(){ document.getElementById('dictationFeedback').textContent='';speakText(currentDictation()); }
+function checkDictation(){
+  const typed=document.getElementById('dictationInput').value,target=currentDictation(),s=similarity(typed,target);
+  const el=document.getElementById('dictationFeedback');
+  if(s>=.93){el.innerHTML='<span class="success">Excellent.</span> '+escapeHtml(target);state.xp+=8;}
+  else if(s>=.72){el.innerHTML='<span class="warning">Close.</span> Target: <strong>'+escapeHtml(target)+'</strong>';state.xp+=4;}
+  else{el.innerHTML='<span class="danger">Try it again after listening once more.</span> Target: <strong>'+escapeHtml(target)+'</strong>';state.xp+=1;}
+  if(s<.93)logMistake('dictation','Write what you hear',target,typed,'Daily dictation');
+  saveLocal();renderMistakes();
+}
+
+function readingForUnit(u){
+  const e=u.examples, p=u.phrases;
+  return e[0]+' '+e[1]+' '+p[0][0]+' '+p[2][0];
+}
+function readingQuestionForUnit(u){
+  return 'In your own words, what is this short passage mostly about?';
+}
+
+function makeQuiz(){
+  const u=unit(), idx=(state.day*7+state.quizTotal)%u.vocab.length, target=u.vocab[idx];
+  const wrong=u.vocab.filter((_,i)=>i!==idx).sort(()=>Math.random()-.5).slice(0,3).map(x=>x[1]);
+  const opts=shuffle([target[1],...wrong]);
+  return {q:'What does “'+target[0]+'” mean?',answer:target[1],options:opts,front:target[0],cardId:cardId(unitIndex(),idx)};
+}
+let currentQuiz=null;
+function renderQuiz(){
+  currentQuiz=makeQuiz();
+  document.getElementById('quizQuestion').innerHTML='<strong>'+escapeHtml(currentQuiz.q)+'</strong>';
+  const holder=document.getElementById('quizOptions');holder.innerHTML='';
+  currentQuiz.options.forEach(o=>{
+    const b=document.createElement('button');b.className='quiz-option';b.textContent=o;
+    b.onclick=()=>answerQuiz(b,o);holder.appendChild(b);
+  });
+  document.getElementById('quizFeedback').textContent='';
+}
+function answerQuiz(btn,o){
+  document.querySelectorAll('#quizOptions button').forEach(x=>x.disabled=true);
+  state.quizTotal++;
+  if(o===currentQuiz.answer){btn.classList.add('correct');state.quizCorrect++;state.xp+=10;document.getElementById('quizFeedback').innerHTML='<span class="success">Correct. +10 XP</span>';}
+  else{
+    btn.classList.add('wrong');
+    [...document.querySelectorAll('#quizOptions button')].find(x=>x.textContent===currentQuiz.answer)?.classList.add('correct');
+    document.getElementById('quizFeedback').innerHTML='Correct answer: <strong>'+escapeHtml(currentQuiz.answer)+'</strong>';
+    logMistake('quiz',currentQuiz.q,currentQuiz.answer,o,'Quick quiz',currentQuiz.cardId);
+  }
+  saveLocal();renderProgress();renderMistakes();
+}
+
+function saveGrammarProduction(){
+  state.grammar[state.day]=document.getElementById('grammarProduction').value.trim();state.xp+=5;saveLocal();alert('Saved.');
+}
+function saveSpeakingNotes(){
+  state.speaking[state.day]=document.getElementById('speakingNotes').value.trim();state.xp+=5;saveLocal();alert('Saved.');
+}
+function saveReading(){
+  state.reading[state.day]=document.getElementById('readingAnswer').value.trim();state.xp+=5;saveLocal();alert('Saved.');
+}
+function saveJournal(){
+  state.journals[state.day]=document.getElementById('journal').value.trim();state.xp+=5;saveLocal();alert('Journal saved.');
+}
+
+function completeDay(){
+  if(!state.completedDays.includes(state.day)){
+    state.completedDays.push(state.day);state.xp+=30;
+    const tk=todayKey();
+    if(state.lastComplete){
+      const a=new Date(state.lastComplete+'T12:00:00'),b=new Date(tk+'T12:00:00'),diff=Math.round((b-a)/86400000);
+      if(diff===1)state.streak++;else if(diff>1)state.streak=1;
+    } else state.streak=1;
+    state.lastComplete=tk;
+    state.activity[tk]=(state.activity[tk]||0)+1;
+  }
+  if(state.day<180)state.day++;
+  saveLocal();renderAll();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function taskPlan(){
+  const d=unitDay(), dt=dayType();
+  const base=[
+    ['Adaptive review','10 min','Clear due cards first; missed cards return sooner.'],
+    ['New vocabulary',d<=2?'12–15 min':'5–10 min',d<=2?'Learn today’s new words in context.':'Strengthen this unit’s vocabulary through recall.'],
+    ['Listening + shadowing','10 min','Listen, pause, and imitate French rhythm out loud.'],
+    ['Speaking','10 min','Answer today’s prompt without scripting in English first.']
+  ];
+  if(d===3)base.push(['Grammar production','10 min','Create your own sentences with the unit grammar.']);
+  if(d===4)base.push(['Reading','10 min','Read for meaning first, then inspect details.']);
+  if(d===5)base.push(['Dictation + conversation','15 min','Train fast retrieval and listening accuracy.']);
+  if(d===6)base.push(['Unit checkpoint','15–20 min','Test vocabulary, meaning and production before moving on.']);
+  base.push(['Journal','5 min','Write five sentences connected to your real day.']);
+  return base;
+}
+
+function renderToday(){
+  const u=unit(),dt=dayType(),ui=unitIndex()+1,ud=unitDay();
+  document.getElementById('cefrPill').textContent=u.cefr;
+  document.getElementById('unitPill').textContent='Unit '+ui+'/30';
+  document.getElementById('dayTypePill').textContent='Day '+ud+': '+dt.name;
+  document.getElementById('todayTitle').textContent=u.theme;
+  document.getElementById('todaySubtitle').textContent=dt.focus;
+  const pct=(state.day-1)/180*100;
+  document.getElementById('courseProgress').style.width=pct+'%';
+  document.getElementById('courseProgressText').textContent=(state.day-1)+' of 180 days completed in sequence';
+  document.getElementById('taskList').innerHTML=taskPlan().map(t=>'<div class="task"><strong>'+t[0]+' <span class="muted">— '+t[1]+'</span></strong><span class="small">'+t[2]+'</span></div>').join('');
+  const ph=currentPhrase();document.getElementById('dailyPhraseFr').textContent=ph[0];document.getElementById('dailyPhraseEn').textContent=ph[1];
+  document.getElementById('grammarTitle').textContent=u.grammar_title;
+  document.getElementById('grammarText').textContent=u.grammar;
+  document.getElementById('grammarExamples').innerHTML=u.examples.map(e=>'<div class="task">'+escapeHtml(e)+'</div>').join('');
+  document.getElementById('speakingPrompt').textContent=u.speaking;
+  document.getElementById('readingText').textContent=readingForUnit(u);
+  document.getElementById('readingQuestion').textContent=readingQuestionForUnit(u);
+  document.getElementById('readingTitle').textContent=ud===4?'Reading focus':'Mini reading';
+  document.getElementById('grammarProduction').value=state.grammar[state.day]||'';
+  document.getElementById('speakingNotes').value=state.speaking[state.day]||'';
+  document.getElementById('readingAnswer').value=state.reading[state.day]||'';
+  document.getElementById('journal').value=state.journals[state.day]||'';
+  document.getElementById('unitTestCard').classList.toggle('hidden',ud!==6);
+  document.getElementById('unitTestDescription').textContent='Ten questions drawn from '+u.theme+'. Aim for 80%+ before moving on.';
+  document.getElementById('unitTestArea').innerHTML='';
+  renderQuiz();buildTodayDeck();
+}
+
+function renderStats(){
+  introduceForToday();
+  document.getElementById('statDay').textContent=state.day;
+  document.getElementById('statStreak').textContent=state.streak;
+  document.getElementById('statXP').textContent=state.xp;
+  document.getElementById('statDue').textContent=dueCards(9999).length;
+}
+
+function startUnitTest(){
+  const u=unit();
+  let pool=u.vocab.map((v,i)=>({front:v[0],back:v[1],i})).sort(()=>Math.random()-.5).slice(0,10);
+  unitTest={pool,index:0,score:0,answered:false};
+  renderUnitTestQuestion();
+}
+function renderUnitTestQuestion(){
+  const area=document.getElementById('unitTestArea');
+  if(!unitTest)return;
+  if(unitTest.index>=unitTest.pool.length){
+    const pct=Math.round(unitTest.score/unitTest.pool.length*100);
+    state.unitTests[unitIndex()]=pct;state.xp+=pct>=80?40:15;saveLocal();
+    area.innerHTML='<div class="divider"></div><div class="score">'+pct+'%</div><p>'+(pct>=80?'Checkpoint passed. Strong work.':'Review the missed vocabulary, then retake when ready.')+'</p>';
+    renderProgress();return;
+  }
+  const q=unitTest.pool[unitTest.index],u=unit();
+  const wrong=u.vocab.filter(x=>x[0]!==q.front).sort(()=>Math.random()-.5).slice(0,3).map(x=>x[1]);
+  const opts=shuffle([q.back,...wrong]);
+  area.innerHTML='<div class="divider"></div><p><strong>'+(unitTest.index+1)+'/10 — What does “'+escapeHtml(q.front)+'” mean?</strong></p>';
+  opts.forEach(o=>{
+    const b=document.createElement('button');b.className='quiz-option';b.textContent=o;b.onclick=()=>{
+      if(o===q.back)unitTest.score++;
+      else logMistake('checkpoint','What does “'+q.front+'” mean?',q.back,o,'Unit checkpoint',cardId(unitIndex(),q.i));
+      unitTest.index++;saveLocal();renderMistakes();renderUnitTestQuestion();
+    };area.appendChild(b);
+  });
+}
+
+function playPronunciationTarget(){
+  const v=document.getElementById('pronunciationSelect').value;speakText(v);
+}
+function checkPronunciationTarget(){
+  const target=document.getElementById('pronunciationSelect').value,el=document.getElementById('pronunciationFeedback');el.textContent='Listening…';
+  recognizeFrench((heard,err)=>{
+    if(err){el.textContent=err;return;}
+    const s=similarity(heard,target);
+    el.innerHTML='Heard: <strong>'+escapeHtml(heard)+'</strong><br>Recognized-text match: '+Math.round(s*100)+'%. Repeat until the browser consistently recognizes the intended words.';
+  });
+}
+function populatePronunciation(){
+  const sel=document.getElementById('pronunciationSelect');
+  const items=[...unit().phrases.map(x=>x[0]),...unit().examples];
+  sel.innerHTML=items.map(x=>'<option value="'+escapeAttr(x)+'">'+escapeHtml(x)+'</option>').join('');
+}
+
+function newRapid(){
+  const u=unit(),p=u.vocab[Math.floor(Math.random()*u.vocab.length)];
+  rapidTarget=p;document.getElementById('rapidPrompt').textContent=p[1];document.getElementById('rapidAnswer').value='';document.getElementById('rapidFeedback').textContent='';
+}
+function checkRapid(){
+  if(!rapidTarget)return;
+  const a=document.getElementById('rapidAnswer').value,s=similarity(a,rapidTarget[0]);
+  document.getElementById('rapidFeedback').innerHTML=s>.88?'<span class="success">Correct.</span>':'Target: <strong>'+escapeHtml(rapidTarget[0])+'</strong>';
+  if(s<=.88)logMistake('rapid-translation',rapidTarget[1],rapidTarget[0],a,'Rapid translation');
+  state.xp+=s>.88?5:1;saveLocal();renderMistakes();
+}
+
+const SCENARIOS={
+  cafe:[
+    ['Serveur','Bonjour ! Vous désirez ?'],
+    ['Serveur','Très bien. Et avec ça ?'],
+    ['Serveur',"D'accord. Autre chose ?"],
+    ['Serveur',"Parfait. Je vous apporte ça."]
+  ],
+  shop:[
+    ['Vendeuse','Bonjour, je peux vous aider ?'],
+    ['Vendeuse','Quelle taille cherchez-vous ?'],
+    ['Vendeuse',"Vous voulez l'essayer ?"],
+    ['Vendeuse','Ça vous va très bien.']
+  ],
+  directions:[
+    ['Passant','Bonjour, vous cherchez quelque chose ?'],
+    ['Passant','Oui. Continuez tout droit.'],
+    ['Passant','Ensuite, tournez à gauche.'],
+    ['Passant',"C'est juste au coin."]
+  ],
+  friend:[
+    ['Ami','Tu fais quoi ce week-end ?'],
+    ['Ami','Ça te dit de sortir samedi ?'],
+    ['Ami','Vers quelle heure ?'],
+    ['Ami','Parfait, à samedi !']
+  ],
+  problem:[
+    ['Employée','Bonjour, quel est le problème ?'],
+    ['Employée','Je comprends. Vous avez votre reçu ?'],
+    ['Employée','Vous préférez un échange ou un remboursement ?'],
+    ['Employée',"D'accord, je vais m'en occuper."]
+  ]
+};
+function renderScenario(){
+  const key=document.getElementById('scenarioSelect').value,turns=SCENARIOS[key];
+  scenarioTurn=Math.min(scenarioTurn,turns.length-1);
+  const t=turns[scenarioTurn];document.getElementById('scenario').innerHTML='<strong>'+t[0]+':</strong> '+escapeHtml(t[1]);
+  document.getElementById('scenarioAnswer').value='';document.getElementById('scenarioFeedback').textContent='';
+}
+function nextScenarioTurn(){
+  const a=document.getElementById('scenarioAnswer').value.trim();
+  if(a.length<2){document.getElementById('scenarioFeedback').textContent='Give the conversation a French reply first.';return;}
+  state.xp+=5;saveLocal();scenarioTurn++;
+  const key=document.getElementById('scenarioSelect').value,turns=SCENARIOS[key];
+  if(scenarioTurn>=turns.length){document.getElementById('scenario').innerHTML='<strong>Scenario complete.</strong>';document.getElementById('scenarioFeedback').textContent='Nice. Reset the scenario from the dropdown or try another one.';scenarioTurn=0;return;}
+  renderScenario();
+}
+
+function addCustomCard(){
+  const f=document.getElementById('customFrench').value.trim(),e=document.getElementById('customEnglish').value.trim();
+  if(!f||!e){alert('Add both the French and the meaning.');return;}
+  state.customCards.push({front:f,back:e});ensureCustomCards();saveLocal();
+  document.getElementById('customFrench').value='';document.getElementById('customEnglish').value='';
+  alert('Added to your review deck.');
+}
+
+function renderProgress(){
+  introduceForToday();
+  const pct=Math.round(state.completedDays.length/180*100),cs=Object.values(state.cards);
+  document.getElementById('progressPercent').textContent=pct+'%';
+  document.getElementById('progressBigBar').style.width=pct+'%';
+  document.getElementById('progressSummary').textContent='Day '+state.day+' • Unit '+(unitIndex()+1)+' • '+unit().cefr;
+  document.getElementById('pDays').textContent=state.completedDays.length;
+  document.getElementById('pCards').textContent=cs.length;
+  document.getElementById('pMature').textContent=cs.filter(c=>skillMastery(upgradeCard(c).skills.recognition)>=80&&(!c.skills.production.active||skillMastery(c.skills.production)>=75)).length;
+  document.getElementById('pQuiz').textContent=state.quizTotal?Math.round(state.quizCorrect/state.quizTotal*100)+'%':'—';
+  const recog=aggregateMastery('recognition'),prod=aggregateMastery('production');
+  document.getElementById('pRecognition').textContent=recog==null?'—':recog+'%';
+  document.getElementById('pProduction').textContent=prod==null?'—':prod+'%';
+  document.getElementById('levelPath').innerHTML=MILESTONES.map(m=>{
+    const done=state.completedDays.filter(d=>d<=m[0]).length>=m[0];
+    return '<div class="task"><strong>'+(done?'✓ ':'')+'Day '+m[0]+' — '+m[1]+'</strong><span class="small">'+m[2]+'</span></div>';
+  }).join('');
+  const weak=cs.map(upgradeCard).filter(c=>(c.lapses||0)>0||skillMastery(c.skills.production)<55&&c.skills.production.active).sort((a,b)=>((b.lapses||0)-(a.lapses||0))||(skillMastery(a.skills.production)-skillMastery(b.skills.production))).slice(0,10);
+  document.getElementById('weakWords').innerHTML=weak.length?weak.map(c=>'<div class="weak-word"><span><strong>'+escapeHtml(c.front)+'</strong><br><span class="small muted">'+escapeHtml(c.back)+'</span></span><span><span class="pill">R '+skillMastery(c.skills.recognition)+'%</span><span class="pill">P '+(c.skills.production.active?skillMastery(c.skills.production)+'%':'—')+'</span></span></div>').join(''):'<div class="notice">No repeat trouble words yet.</div>';
+  document.getElementById('milestones').innerHTML=MILESTONES.map(m=>{
+    const result=m[0]%6===0?state.unitTests[Math.min(29,m[0]/6-1)]:null;
+    return '<details><summary>Day '+m[0]+': '+m[1]+'</summary><p>'+m[2]+'</p>'+(result!=null?'<p>Recorded checkpoint: <strong>'+result+'%</strong></p>':'')+'</details>';
+  }).join('');
+}
+
+function renderSettings(){
+  document.getElementById('speechRate').value=state.settings.rate||0.85;
+  document.getElementById('rateLabel').textContent=Number(state.settings.rate||0.85).toFixed(2)+'×';
+  document.getElementById('themeSelect').value=state.settings.theme||'light';
+  document.documentElement.dataset.theme=state.settings.theme||'light';
+}
+function updateSpeechRate(v){state.settings.rate=Number(v);document.getElementById('rateLabel').textContent=Number(v).toFixed(2)+'×';saveLocal();}
+function setTheme(v){state.settings.theme=v;document.documentElement.dataset.theme=v;saveLocal();}
+
+function exportProgress(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='french180-github-pages-progress-'+todayKey()+'.json';a.click();URL.revokeObjectURL(a.href);
+}
+function importProgress(event){
+  const f=event.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{
+    try{state=migrateState(JSON.parse(r.result));saveLocal();renderAll();alert('Backup imported.');}
+    catch(e){alert('That file does not look like a valid French 180 backup.');}
+  };r.readAsText(f);
+}
+function micErrorMessage(err){
+  const name=(err&&err.name)||'', msg=(err&&err.message)||'';
+  if(name==='NotAllowedError'||name==='SecurityError') return 'Microphone permission is blocked. Use the lock/site-controls icon in the address bar, allow Microphone for this site, then reload.';
+  if(name==='NotFoundError'||name==='DevicesNotFoundError') return 'No microphone was found. Connect or enable a microphone, then try again.';
+  if(name==='NotReadableError'||name==='TrackStartError') return 'Your microphone is busy or unavailable to the browser. Close other apps using it and try again.';
+  if(name==='OverconstrainedError') return 'The browser could not use the selected microphone settings.';
+  return 'Microphone error'+(name?': '+name:'')+(msg?' — '+msg:'');
+}
+async function refreshMicStatus(){
+  const el=document.getElementById('micStatus'); if(!el)return;
+  if(!window.isSecureContext){el.textContent='Microphone requires HTTPS. Open the published github.io address, not a local file.';return;}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){el.textContent='This browser does not expose microphone access. Current Chrome or Edge is recommended.';return;}
+  let perm='unknown';
+  try{if(navigator.permissions&&navigator.permissions.query){perm=(await navigator.permissions.query({name:'microphone'})).state;}}catch(e){}
+  const speech=recognitionAvailable()?'Speech recognition available':'Speech recognition unavailable';
+  el.textContent='Permission: '+perm+' • '+speech+'.';
+}
+async function requestMicrophoneAccess(){
+  const el=document.getElementById('micStatus'); if(el)el.textContent='Requesting microphone permission…';
+  if(!window.isSecureContext){if(el)el.textContent='Microphone requires HTTPS. Use your published github.io site.';return false;}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){if(el)el.textContent='Microphone access is not supported by this browser.';return false;}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    stream.getTracks().forEach(t=>t.stop());
+    if(el)el.textContent=recognitionAvailable()?'Microphone allowed. Speech practice is ready.':'Microphone allowed, but this browser does not support Web Speech recognition. Try Chrome or Edge.';
+    return true;
+  }catch(err){if(el)el.textContent=micErrorMessage(err);return false;}
+}
+
+function jumpDay(delta){state.day=Math.max(1,Math.min(180,state.day+delta));saveLocal();renderAll();window.scrollTo({top:0,behavior:'smooth'});}
+function resetAll(){
+  if(!confirm('Delete all local French 180 progress, reviews, journals, XP and streak data?'))return;
+  state=defaultState();saveLocal();renderAll();
+}
+
+function renderPractice(){
+  populatePronunciation();newRapid();scenarioTurn=0;renderScenario();
+}
+function renderAll(){
+  renderSettings();renderToday();buildReviewDeck();renderPractice();renderProgress();renderStats();renderMistakes();
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function escapeAttr(s){return escapeHtml(s).replace(/`/g,'&#96;');}
+
+
+/* =========================
+   V3.0 EXPERIENCE LAYER
+   ========================= */
+
+function ensureV3State(){
+  const d=defaultState();
+  state.version=3.01;state.srsVersion=SRS_VERSION;
+  state.settings=Object.assign({},d.settings,state.settings||{});
+  state.skillHistory=state.skillHistory||{};
+  V3_DOMAINS.forEach(k=>{if(!Array.isArray(state.skillHistory[k]))state.skillHistory[k]=[];});
+  state.cefrAssessments=state.cefrAssessments||{};
+  state.focus=Object.assign({},d.focus,state.focus||{});
+  state.resume=Object.assign({},d.resume,state.resume||{});
+  state.sessionHistory=state.sessionHistory||{};
+}
+ensureV3State();
+
+function recordSkill(domain,score,source){
+  ensureV3State();
+  if(!V3_DOMAINS.includes(domain))return;
+  const value=Math.max(0,Math.min(100,Math.round(Number(score)||0)));
+  const a=state.skillHistory[domain];
+  a.push({score:value,day:state.day,at:Date.now(),source:source||''});
+  if(a.length>40)a.splice(0,a.length-40);
+}
+function recentSkill(domain,n=12){
+  const a=(state.skillHistory&&state.skillHistory[domain])||[];
+  if(!a.length)return null;
+  const xs=a.slice(-n);return Math.round(xs.reduce((s,x)=>s+x.score,0)/xs.length);
+}
+function skillSnapshot(){
+  return {
+    vocabulary:aggregateMastery('recognition'),
+    production:aggregateMastery('production'),
+    listening:recentSkill('listening'),
+    pronunciation:recentSkill('pronunciation'),
+    grammar:recentSkill('grammar'),
+    reading:recentSkill('reading'),
+    speaking:recentSkill('speaking')
+  };
+}
+function domainLabel(k){
+  return ({vocabulary:'Vocabulary recognition',production:'French production',listening:'Listening',pronunciation:'Pronunciation recognition',grammar:'Grammar production',reading:'Reading',speaking:'Speaking'})[k]||k;
+}
+function weakestDomain(){
+  const s=skillSnapshot();
+  const entries=Object.entries(s).map(([k,v])=>[k,v==null?55:v]);
+  entries.sort((a,b)=>a[1]-b[1]);
+  return entries[0];
+}
+function practiceDaysLast7(){
+  let n=0;
+  for(let i=0;i<7;i++){if((state.activity||{})[addDaysKey(-i)])n++;}
+  return n;
+}
+function speakTextAtRate(text,rate){
+  if(!text)return;
+  if(!('speechSynthesis' in window)){alert('Your browser does not support text-to-speech.');return;}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';u.rate=Number(rate||state.settings.rate||.85);
+  const voices=speechSynthesis.getVoices();
+  const fr=voices.find(v=>/^fr(-|_)/i.test(v.lang))||voices.find(v=>/French/i.test(v.name));
+  if(fr)u.voice=fr;speechSynthesis.speak(u);
+}
+
+const V21_currentDictation=currentDictation;
+currentDictation=function(){return currentV3Day().dictation;};
+const V21_readingForUnit=readingForUnit;
+readingForUnit=function(){return currentV3Day().reading;};
+
+function wordTokens(s){return normalizeFrench(s).split(/\s+/).filter(Boolean);}
+function renderWordDiff(target,typed,elementId){
+  const t=wordTokens(target),a=wordTokens(typed),el=document.getElementById(elementId);if(!el)return;
+  el.innerHTML=t.map((w,i)=>'<span class="word-token '+(a[i]===w?'ok':'miss')+'">'+escapeHtml(w)+'</span>').join('');
+}
+function playListeningRate(rate){speakTextAtRate(currentDictation(),rate);}
+function toggleListeningTranscript(){
+  const el=document.getElementById('listeningTranscript');el.textContent=currentDictation();el.classList.toggle('hidden');
+}
+
+const V21_checkDictation=checkDictation;
+checkDictation=function(){
+  const typed=document.getElementById('dictationInput').value,target=currentDictation(),s=similarity(typed,target);
+  const el=document.getElementById('dictationFeedback');
+  if(s>=.93){el.innerHTML='<span class="success">Excellent.</span> '+escapeHtml(target);state.xp+=8;}
+  else if(s>=.72){el.innerHTML='<span class="warning">Close.</span> Target: <strong>'+escapeHtml(target)+'</strong>';state.xp+=4;}
+  else{el.innerHTML='<span class="danger">Listen once more, then rebuild it.</span> Target: <strong>'+escapeHtml(target)+'</strong>';state.xp+=1;}
+  renderWordDiff(target,typed,'dictationWordDiff');
+  if(s<.93)logMistake('dictation','Write what you hear',target,typed,'V3 listening ladder');
+  recordSkill('listening',s*100,'Daily dictation');
+  saveLocal();renderMistakes();renderProgress();
+};
+
+function labListeningTarget(){
+  const d=currentV3Day(),u=unit();
+  return d.day%2?d.dictation:u.phrases[(unitDay()+2)%u.phrases.length][0];
+}
+function playLabListening(rate){speakTextAtRate(labListeningTarget(),rate);}
+function checkLabListening(){
+  const target=labListeningTarget(),typed=document.getElementById('labListeningInput').value,s=similarity(typed,target);
+  const el=document.getElementById('labListeningFeedback');
+  el.innerHTML=s>=.9?'<span class="success">Strong reconstruction.</span>':s>=.7?'<span class="warning">Close.</span> '+escapeHtml(target):'Target: <strong>'+escapeHtml(target)+'</strong>';
+  renderWordDiff(target,typed,'labListeningDiff');recordSkill('listening',s*100,'Listening lab');
+  if(s<.9)logMistake('dictation','Listening lab',target,typed,'Listening lab');
+  state.xp+=s>=.9?7:s>=.7?4:1;saveLocal();renderProgress();renderMistakes();
+}
+
+/* Pronunciation course: speech recognition checks word recognition, not accent quality. */
+function dailyPronIndex(){return (state.day-1)%V3_PRONUNCIATION.length;}
+function renderPronunciationModule(){
+  const sel=document.getElementById('pronModuleSelect');if(!sel)return;
+  let idx=Number(sel.value);if(!Number.isFinite(idx))idx=dailyPronIndex();
+  const m=V3_PRONUNCIATION[idx];
+  document.getElementById('pronModulePill').textContent='Module '+(idx+1)+' / '+V3_PRONUNCIATION.length;
+  document.getElementById('pronModuleTitle').textContent=m.title;
+  document.getElementById('pronModuleTip').textContent=m.tip;
+  document.getElementById('pronPairs').innerHTML=m.pairs.map(x=>'<span class="pron-pair">'+escapeHtml(x)+'</span>').join('');
+  const targetSel=document.getElementById('pronunciationSelect');
+  targetSel.innerHTML=m.targets.map(x=>'<option value="'+escapeAttr(x)+'">'+escapeHtml(x)+'</option>').join('');
+}
+const V21_populatePronunciation=populatePronunciation;
+populatePronunciation=function(){
+  const sel=document.getElementById('pronModuleSelect');if(!sel)return;
+  sel.innerHTML=V3_PRONUNCIATION.map((m,i)=>'<option value="'+i+'">'+(i+1)+'. '+escapeHtml(m.title)+'</option>').join('');
+  sel.value=String(dailyPronIndex());renderPronunciationModule();
+};
+function nextPronunciationTarget(){
+  const s=document.getElementById('pronunciationSelect');if(!s.options.length)return;
+  s.selectedIndex=(s.selectedIndex+1)%s.options.length;document.getElementById('pronunciationFeedback').textContent='';
+}
+playPronunciationTarget=function(){speakText(document.getElementById('pronunciationSelect').value);};
+checkPronunciationTarget=function(){
+  const target=document.getElementById('pronunciationSelect').value,el=document.getElementById('pronunciationFeedback');el.textContent='Listening…';
+  recognizeFrench((heard,err)=>{
+    if(err){el.textContent=err;return;}
+    const s=similarity(heard,target);
+    el.innerHTML='I heard: <strong>'+escapeHtml(heard)+'</strong><br>Recognized-word match: '+Math.round(s*100)+'%. This is a recognition check, not an accent score.';
+    recordSkill('pronunciation',s*100,'Pronunciation course');saveLocal();renderProgress();
+  });
+};
+
+/* 12 branching conversation scenes */
+const V3_SCENARIOS={
+  cafe:{start:'a',nodes:{
+    a:{speaker:'Serveur',line:'Bonjour ! Vous désirez ?',branches:[
+      {keywords:['café','cafe'],next:'coffee',feedback:'Good — you ordered a coffee.'},
+      {keywords:['thé','the'],next:'tea',feedback:'Good — you ordered tea.'},
+      {keywords:[],next:'other',feedback:'Good — you made an order.'}]},
+    coffee:{speaker:'Serveur',line:'Un café. Avec du lait ou du sucre ?',branches:[
+      {keywords:['lait'],next:'pay',feedback:'Nice — you specified milk.'},{keywords:['sucre'],next:'pay',feedback:'Nice — you specified sugar.'},{keywords:['sans','non'],next:'pay',feedback:'Clear: no extras.'},{keywords:[],next:'pay',feedback:'The server understood.'}]},
+    tea:{speaker:'Serveur',line:'Quel thé préférez-vous ?',branches:[
+      {keywords:['vert'],next:'pay',feedback:'Thé vert — clear choice.'},{keywords:['noir'],next:'pay',feedback:'Thé noir — clear choice.'},{keywords:[],next:'pay',feedback:'The server follows your choice.'}]},
+    other:{speaker:'Serveur',line:'Très bien. Sur place ou à emporter ?',branches:[
+      {keywords:['emporter'],next:'pay',feedback:'Takeaway selected.'},{keywords:['place'],next:'pay',feedback:'For here selected.'},{keywords:[],next:'pay',feedback:'Keep the exchange moving.'}]},
+    pay:{speaker:'Serveur',line:'Ça fait six euros. Vous payez comment ?',branches:[
+      {keywords:['carte'],next:'end',feedback:'Card payment — done.'},{keywords:['espèces','especes'],next:'end',feedback:'Cash payment — done.'},{keywords:[],next:'end',feedback:'Payment handled.'}]},
+    end:{speaker:'Serveur',line:'Merci ! Bonne journée.',end:true}
+  }},
+  shop:{start:'a',nodes:{
+    a:{speaker:'Vendeuse',line:'Bonjour, je peux vous aider ?',branches:[
+      {keywords:['taille'],next:'size',feedback:'You asked about size.'},{keywords:['essayer'],next:'try',feedback:'You want to try something on.'},{keywords:[],next:'size',feedback:'You explained what you need.'}]},
+    size:{speaker:'Vendeuse',line:'Bien sûr. Quelle taille cherchez-vous ?',branches:[{keywords:[],next:'try',feedback:'Size given.'}]},
+    try:{speaker:'Vendeuse',line:"Vous voulez l'essayer ?",branches:[
+      {keywords:['oui'],next:'buy',feedback:'Trying it on.'},{keywords:['non'],next:'alt',feedback:'You declined.'},{keywords:[],next:'buy',feedback:'Continuing.'}]},
+    alt:{speaker:'Vendeuse',line:'Vous voulez voir une autre couleur ?',branches:[{keywords:[],next:'buy',feedback:'You considered another option.'}]},
+    buy:{speaker:'Vendeuse',line:'Vous le prenez ?',branches:[{keywords:['oui','prends'],next:'end',feedback:'Purchase complete.'},{keywords:['non'],next:'end',feedback:'You politely declined.'},{keywords:[],next:'end',feedback:'Exchange complete.'}]},
+    end:{speaker:'Vendeuse',line:'Très bien, merci !',end:true}
+  }},
+  directions:{start:'a',nodes:{
+    a:{speaker:'Passant',line:'Bonjour, vous cherchez quelque chose ?',branches:[{keywords:['gare'],next:'station',feedback:'You asked for the station.'},{keywords:['pharmacie'],next:'pharmacy',feedback:'You asked for the pharmacy.'},{keywords:[],next:'route',feedback:'You named your destination.'}]},
+    station:{speaker:'Passant',line:"La gare ? Allez tout droit jusqu'au feu.",branches:[{keywords:['merci','ensuite','après','apres'],next:'route',feedback:'You kept the directions going.'}]},
+    pharmacy:{speaker:'Passant',line:"La pharmacie est près d'ici.",branches:[{keywords:['où','ou','comment'],next:'route',feedback:'You asked for the next step.'}]},
+    route:{speaker:'Passant',line:'Ensuite, tournez à gauche. Vous voyez la banque ?',branches:[{keywords:['oui'],next:'end',feedback:'Landmark confirmed.'},{keywords:['non'],next:'clarify',feedback:'Good — you asked for clarification.'},{keywords:[],next:'end',feedback:'Directions completed.'}]},
+    clarify:{speaker:'Passant',line:"Pas grave. C'est le grand bâtiment bleu.",branches:[{keywords:[],next:'end',feedback:'Clarification received.'}]},
+    end:{speaker:'Passant',line:"C'est juste après la banque. Bonne journée !",end:true}
+  }},
+  friend:{start:'a',nodes:{
+    a:{speaker:'Ami',line:'Tu fais quoi ce week-end ?',branches:[{keywords:['travail','travaille'],next:'busy',feedback:'You explained you are busy.'},{keywords:['rien','libre','disponible'],next:'invite',feedback:'You are available.'},{keywords:[],next:'invite',feedback:'You shared your plan.'}]},
+    busy:{speaker:'Ami',line:'Ah mince. Tu es libre dimanche ?',branches:[{keywords:['oui'],next:'time',feedback:'Sunday works.'},{keywords:['non'],next:'end',feedback:'You declined clearly.'},{keywords:[],next:'time',feedback:'You negotiated.'}]},
+    invite:{speaker:'Ami',line:'Ça te dit de sortir samedi ?',branches:[{keywords:['oui','daccord','d’accord','carrément'],next:'time',feedback:'Plan accepted.'},{keywords:['non'],next:'alt',feedback:'You declined.'},{keywords:[],next:'time',feedback:'You responded.'}]},
+    alt:{speaker:'Ami',line:'Dimanche alors ?',branches:[{keywords:[],next:'time',feedback:'Alternative offered.'}]},
+    time:{speaker:'Ami',line:'Vers quelle heure ?',branches:[{keywords:[],next:'end',feedback:'Time set.'}]},
+    end:{speaker:'Ami',line:'Parfait. À bientôt !',end:true}
+  }},
+  problem:{start:'a',nodes:{
+    a:{speaker:'Employée',line:'Bonjour, quel est le problème ?',branches:[{keywords:['taille','cassé','casse','marche','problème','probleme'],next:'receipt',feedback:'You explained the problem.'},{keywords:[],next:'receipt',feedback:'Problem stated.'}]},
+    receipt:{speaker:'Employée',line:'Je comprends. Vous avez le reçu ?',branches:[{keywords:['oui'],next:'choice',feedback:'Receipt available.'},{keywords:['non'],next:'noreceipt',feedback:'No receipt — the situation changes.'},{keywords:[],next:'choice',feedback:'Continuing.'}]},
+    noreceipt:{speaker:'Employée',line:"Sans reçu, je peux peut-être faire un échange.",branches:[{keywords:[],next:'choice',feedback:'You adapted to the policy.'}]},
+    choice:{speaker:'Employée',line:'Vous préférez un échange ou un remboursement ?',branches:[{keywords:['rembours'],next:'end',feedback:'Refund requested.'},{keywords:['échange','echange'],next:'end',feedback:'Exchange requested.'},{keywords:[],next:'end',feedback:'You chose a solution.'}]},
+    end:{speaker:'Employée',line:"D'accord, je vais m'en occuper.",end:true}
+  }},
+  hotel:{start:'a',nodes:{
+    a:{speaker:'Réceptionniste',line:'Bonsoir. Vous avez une réservation ?',branches:[{keywords:['oui','réservation','reservation'],next:'name',feedback:'Reservation confirmed.'},{keywords:['non'],next:'walkin',feedback:'You need a room without a reservation.'},{keywords:[],next:'name',feedback:'Check-in continues.'}]},
+    name:{speaker:'Réceptionniste',line:'Sous quel nom ?',branches:[{keywords:[],next:'nights',feedback:'Name provided.'}]},
+    walkin:{speaker:'Réceptionniste',line:'Pour combien de nuits ?',branches:[{keywords:[],next:'nights',feedback:'Length of stay given.'}]},
+    nights:{speaker:'Réceptionniste',line:'Très bien. Vous préférez un lit double ?',branches:[{keywords:[],next:'end',feedback:'Room preference handled.'}]},
+    end:{speaker:'Réceptionniste',line:'Voici votre clé. Votre chambre est au troisième étage.',end:true}
+  }},
+  train:{start:'a',nodes:{
+    a:{speaker:'Agent',line:'Bonjour. Votre train a vingt minutes de retard.',branches:[{keywords:['correspondance'],next:'connection',feedback:'You raised the connection issue.'},{keywords:['pourquoi'],next:'reason',feedback:'You asked why.'},{keywords:[],next:'connection',feedback:'You responded to the delay.'}]},
+    reason:{speaker:'Agent',line:'Il y a un problème technique.',branches:[{keywords:[],next:'connection',feedback:'Reason understood.'}]},
+    connection:{speaker:'Agent',line:'Vous avez une correspondance ?',branches:[{keywords:['oui'],next:'reroute',feedback:'Connection at risk.'},{keywords:['non'],next:'end',feedback:'No connection problem.'},{keywords:[],next:'reroute',feedback:'Travel plan clarified.'}]},
+    reroute:{speaker:'Agent',line:'Je peux vous mettre sur le train suivant.',branches:[{keywords:[],next:'end',feedback:'Alternative accepted or discussed.'}]},
+    end:{speaker:'Agent',line:'Voilà votre nouveau billet. Bon voyage.',end:true}
+  }},
+  pharmacy:{start:'a',nodes:{
+    a:{speaker:'Pharmacienne',line:'Bonjour. Qu’est-ce qui vous arrive ?',branches:[{keywords:['tête','tete'],next:'head',feedback:'Headache described.'},{keywords:['ventre'],next:'stomach',feedback:'Stomach symptoms described.'},{keywords:[],next:'general',feedback:'You described the symptom.'}]},
+    head:{speaker:'Pharmacienne',line:'Depuis combien de temps vous avez mal à la tête ?',branches:[{keywords:[],next:'med',feedback:'Duration given.'}]},
+    stomach:{speaker:'Pharmacienne',line:'Vous avez aussi de la fièvre ?',branches:[{keywords:[],next:'med',feedback:'You answered the follow-up.'}]},
+    general:{speaker:'Pharmacienne',line:'Vous avez de la fièvre ?',branches:[{keywords:[],next:'med',feedback:'Follow-up answered.'}]},
+    med:{speaker:'Pharmacienne',line:'Je peux vous proposer quelque chose, mais lisez bien la notice.',branches:[{keywords:[],next:'end',feedback:'You handled the recommendation.'}]},
+    end:{speaker:'Pharmacienne',line:'Si ça continue, consultez un médecin.',end:true}
+  }},
+  party:{start:'a',nodes:{
+    a:{speaker:'Camille',line:'Salut ! Je crois qu’on ne se connaît pas. Moi, c’est Camille.',branches:[{keywords:['mappelle','m’appelle','moi'],next:'from',feedback:'You introduced yourself.'},{keywords:[],next:'from',feedback:'Introduction made.'}]},
+    from:{speaker:'Camille',line:'Enchantée ! Tu viens d’où ?',branches:[{keywords:[],next:'hobby',feedback:'You said where you are from.'}]},
+    hobby:{speaker:'Camille',line:'Et tu fais quoi dans la vie ?',branches:[{keywords:[],next:'music',feedback:'You shared something about yourself.'}]},
+    music:{speaker:'Camille',line:'Tu connais la musique qui passe ?',branches:[{keywords:[],next:'end',feedback:'You kept the small talk going.'}]},
+    end:{speaker:'Camille',line:'Cool ! On se retrouve plus tard.',end:true}
+  }},
+  restaurant:{start:'a',nodes:{
+    a:{speaker:'Hôtesse',line:'Bonsoir. Vous avez réservé ?',branches:[{keywords:['oui'],next:'name',feedback:'Reservation confirmed.'},{keywords:['non'],next:'wait',feedback:'Walk-in request.'},{keywords:[],next:'name',feedback:'Reservation discussion continues.'}]},
+    name:{speaker:'Hôtesse',line:'Sous quel nom et pour combien de personnes ?',branches:[{keywords:[],next:'seat',feedback:'Details given.'}]},
+    wait:{speaker:'Hôtesse',line:'Pour combien de personnes ?',branches:[{keywords:[],next:'seat',feedback:'Party size given.'}]},
+    seat:{speaker:'Hôtesse',line:'Vous préférez une table à l’intérieur ou dehors ?',branches:[{keywords:[],next:'end',feedback:'Seating preference given.'}]},
+    end:{speaker:'Hôtesse',line:'Très bien. Suivez-moi, s’il vous plaît.',end:true}
+  }},
+  work:{start:'a',nodes:{
+    a:{speaker:'Collègue',line:'Tu as fini le projet ?',branches:[{keywords:['oui'],next:'done',feedback:'You reported completion.'},{keywords:['non','pas'],next:'delay',feedback:'You explained it is not finished.'},{keywords:[],next:'delay',feedback:'You gave a status update.'}]},
+    done:{speaker:'Collègue',line:'Super. Tu peux me l’envoyer aujourd’hui ?',branches:[{keywords:[],next:'end',feedback:'Next step agreed.'}]},
+    delay:{speaker:'Collègue',line:'Tu penses finir quand ?',branches:[{keywords:[],next:'help',feedback:'You gave a timeline.'}]},
+    help:{speaker:'Collègue',line:'Tu as besoin d’aide ?',branches:[{keywords:[],next:'end',feedback:'You responded to the offer.'}]},
+    end:{speaker:'Collègue',line:'Parfait, merci pour la mise à jour.',end:true}
+  }},
+  story:{start:'a',nodes:{
+    a:{speaker:'Ami',line:'Alors, raconte ! Qu’est-ce qui s’est passé ?',branches:[{keywords:['hier','samedi','semaine','jour'],next:'then',feedback:'You established when it happened.'},{keywords:[],next:'then',feedback:'Story started.'}]},
+    then:{speaker:'Ami',line:'Et ensuite ?',branches:[{keywords:[],next:'reaction',feedback:'You continued the sequence.'}]},
+    reaction:{speaker:'Ami',line:'Sérieux ? Et toi, tu as fait quoi ?',branches:[{keywords:[],next:'ending',feedback:'You explained your reaction.'}]},
+    ending:{speaker:'Ami',line:'Et finalement ?',branches:[{keywords:[],next:'end',feedback:'You gave the ending.'}]},
+    end:{speaker:'Ami',line:'Quelle histoire !',end:true}
+  }}
+};
+let v3Scenario={key:null,node:null};
+function scenarioNode(){const s=V3_SCENARIOS[v3Scenario.key];return s&&s.nodes[v3Scenario.node];}
+renderScenario=function(){
+  const key=document.getElementById('scenarioSelect').value;
+  if(v3Scenario.key!==key){v3Scenario={key,node:V3_SCENARIOS[key].start};}
+  const n=scenarioNode();
+  document.getElementById('scenario').innerHTML=n?'<strong>'+escapeHtml(n.speaker)+':</strong> '+escapeHtml(n.line):'';
+  document.getElementById('scenarioAnswer').value='';document.getElementById('scenarioFeedback').textContent='';
+};
+nextScenarioTurn=function(){
+  const a=document.getElementById('scenarioAnswer').value.trim(),n=scenarioNode(),feedback=document.getElementById('scenarioFeedback');
+  if(!n||n.end){v3Scenario={key:v3Scenario.key,node:V3_SCENARIOS[v3Scenario.key].start};renderScenario();return;}
+  if(normalizeFrench(a).length<2){feedback.textContent='Give the conversation a French reply first. A short reply is completely fine.';return;}
+  const norm=normalizeFrench(a);
+  const b=(n.branches||[]).find(x=>(x.keywords||[]).length&&x.keywords.some(k=>norm.includes(normalizeFrench(k))))
+    ||(n.branches||[]).find(x=>!(x.keywords||[]).length)
+    ||(n.branches||[])[0];
+  recordSkill('speaking',Math.min(100,50+Math.min(40,wordTokens(a).length*6)),'Branching conversation');
+  state.xp+=5;saveLocal();
+  feedback.innerHTML='<span class="success">'+escapeHtml(b?.feedback||'Good — keep the conversation moving.')+'</span>';
+  v3Scenario.node=b?.next||v3Scenario.node;
+  const next=scenarioNode();
+  if(next?.end){
+    setTimeout(()=>{document.getElementById('scenario').innerHTML='<strong>'+escapeHtml(next.speaker)+':</strong> '+escapeHtml(next.line)+'<br><br><strong>Scenario complete.</strong>';},50);
+  }else setTimeout(renderScenario,250);
+};
+
+
+function adaptiveBand(){
+  const vals=Object.values(skillSnapshot()).filter(v=>v!=null);
+  if(vals.length<2)return 'steady';
+  const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+  if(avg<58)return 'support';
+  if(avg>=82)return 'stretch';
+  return 'steady';
+}
+const V21_buildTodayDeck=buildTodayDeck;
+buildTodayDeck=function(){
+  V21_buildTodayDeck();
+  const band=adaptiveBand(),limit=band==='support'?14:band==='steady'?20:24;
+  if(todayDeck.length>limit){todayDeck=todayDeck.slice(0,limit);todayDeckIndex=Math.min(todayDeckIndex,todayDeck.length);renderTodayCard();}
+};
+
+/* Day-specific curriculum + flexible sessions */
+function v3FullPlan(){
+  const d=unitDay(),x=[
+    {title:'Adaptive review',time:'5–10 min',desc:'Clear the most useful due cards first.',view:'review',target:null,essential:true},
+    {title:'Vocabulary retrieval',time:'6–10 min',desc:currentV3Day().retrieval,view:'today',target:'vocabCard',essential:true},
+    {title:'Listening ladder',time:'5–8 min',desc:currentV3Day().listening,view:'today',target:'listeningCard',essential:true},
+    {title:'Speaking',time:'5–10 min',desc:unit().speaking+' '+currentV3Day().micro,view:'today',target:'speakingCard',essential:true},
+    {title:'Grammar production',time:'6–10 min',desc:'Make the unit grammar true about your own life.',view:'today',target:'grammarCard',essential:d===3},
+    {title:'Reading',time:'5–8 min',desc:'Read once for meaning before translating.',view:'today',target:'readingCard',essential:d===4},
+    {title:'Quick quiz',time:'3 min',desc:'One retrieval check for immediate feedback.',view:'today',target:'quizCard',essential:false},
+    {title:'Journal',time:'5 min',desc:'Write a few sentences connected to your actual day.',view:'today',target:'journalCard',essential:false}
+  ];
+  if(d===6)x.push({title:'Unit checkpoint',time:'10–15 min',desc:'Test the unit, then recover one miss.',view:'today',target:'unitTestCard',essential:true});
+  return x;
+}
+function v3PlanObjects(){
+  const mode=state.settings.sessionMode||'standard',energy=state.settings.energy||'medium',full=v3FullPlan();
+  let max=V3_SESSION_META[mode].maxTasks;
+  if(energy==='low')max=Math.min(max,3);
+  if(energy==='high'&&mode!=='quick')max=Math.min(full.length,max+1);
+  let selected=[];
+  if(mode==='quick'||energy==='low'){
+    const priorities=['Adaptive review','Listening ladder','Speaking','Vocabulary retrieval','Unit checkpoint'];
+    priorities.forEach(t=>{const item=full.find(x=>x.title===t);if(item&&!selected.includes(item)&&selected.length<max)selected.push(item);});
+  } else if(mode==='standard'){
+    selected=full.filter(x=>x.essential||['Vocabulary retrieval','Listening ladder','Speaking','Quick quiz'].includes(x.title)).slice(0,max);
+  } else selected=full.slice(0,max);
+  return selected;
+}
+taskPlan=function(){return v3PlanObjects().map(x=>[x.title,x.time,x.desc]);};
+
+function updateSessionControls(){
+  const mode=state.settings.sessionMode||'standard',energy=state.settings.energy||'medium';
+  document.querySelectorAll('[data-session]').forEach(b=>b.classList.toggle('selected',b.dataset.session===mode));
+  document.querySelectorAll('[data-energy]').forEach(b=>b.classList.toggle('selected',b.dataset.energy===energy));
+  const minutes=mode==='quick'?10:mode==='deep'?45:25;
+  const est=energy==='low'?Math.min(10,minutes):energy==='high'?minutes+5:minutes;
+  const el=document.getElementById('sessionEstimate');if(el)el.textContent='~'+est+' min';
+  const band=adaptiveBand(),bp=document.getElementById('adaptiveBandPill');
+  if(bp)bp.textContent=band==='support'?'Support mode · lighter new load':band==='stretch'?'Stretch mode · fuller challenge':'Steady challenge';
+}
+function setSessionMode(v){state.settings.sessionMode=v;saveLocal();updateSessionControls();renderToday();renderSettings();}
+function setEnergy(v){state.settings.energy=v;saveLocal();updateSessionControls();renderToday();}
+function overwhelmedMode(){
+  state.settings.sessionMode='quick';state.settings.energy='low';state.settings.lowStim=true;
+  applyAccessibilitySettings();saveLocal();renderToday();startFocusSprint();
+}
+function startTinyTask(){
+  state.settings.sessionMode='quick';state.settings.energy='low';saveLocal();renderToday();
+  state.focus={day:state.day,step:0,done:[],skipped:[],active:true,tiny:true};saveLocal();startFocusSprint(true);
+}
+
+/* Focus Sprint + re-entry */
+let focusTimerInterval=null,focusTimerRemaining=0,focusTimerRunning=false;
+function focusTasks(){return v3PlanObjects();}
+function startFocusSprint(preserve=false){
+  if(!preserve&&(state.focus.day!==state.day||!state.focus.active))state.focus={day:state.day,step:0,done:[],skipped:[],active:true,tiny:false};
+  state.focus.active=true;document.body.classList.add('focus-sprint');
+  document.getElementById('focusSprintCard').classList.remove('hidden');
+  saveLocal();renderFocusSprint();document.getElementById('focusSprintCard').scrollIntoView({behavior:state.settings.reducedMotion?'auto':'smooth',block:'start'});
+}
+function renderFocusSprint(){
+  const card=document.getElementById('focusSprintCard');if(!card)return;
+  const tasks=focusTasks();let i=Math.max(0,Math.min(state.focus.step||0,tasks.length));
+  if(i>=tasks.length){
+    card.classList.remove('hidden');document.getElementById('focusStepCount').textContent='Complete';
+    document.getElementById('focusTimeHint').textContent='You can stop here';
+    document.getElementById('focusStepTitle').textContent='Focus Sprint finished';
+    document.getElementById('focusStepDescription').textContent='You did the session you chose. More work is optional.';
+    document.getElementById('focusProgress').style.width='100%';return;
+  }
+  const t=tasks[i];document.getElementById('focusStepCount').textContent='Step '+(i+1)+' / '+tasks.length;
+  document.getElementById('focusTimeHint').textContent=t.time;document.getElementById('focusStepTitle').textContent=t.title;
+  document.getElementById('focusStepDescription').textContent=t.desc;document.getElementById('focusProgress').style.width=(i/tasks.length*100)+'%';
+}
+function focusGoToTask(){
+  const t=focusTasks()[state.focus.step||0];if(!t)return;
+  showView(t.view||'today',false);
+  if(t.target)setTimeout(()=>document.getElementById(t.target)?.scrollIntoView({behavior:state.settings.reducedMotion?'auto':'smooth',block:'start'}),80);
+  state.resume={view:t.view||'today',target:t.target||null,label:'Continue '+t.title};saveLocal();
+}
+function focusCompleteStep(){state.focus.done=state.focus.done||[];state.focus.done.push(state.focus.step);state.focus.step=(state.focus.step||0)+1;state.resume={view:'today',target:'focusSprintCard',label:'Continue Focus Sprint'};saveLocal();renderFocusSprint();renderReentry();}
+function focusSkipStep(){state.focus.skipped=state.focus.skipped||[];state.focus.skipped.push(state.focus.step);state.focus.step=(state.focus.step||0)+1;saveLocal();renderFocusSprint();renderReentry();}
+function closeFocusSprint(){state.focus.active=false;state.focus.tiny=false;document.body.classList.remove('focus-sprint');document.getElementById('focusSprintCard').classList.add('hidden');resetFocusTimer();saveLocal();renderReentry();}
+function startFocusTimer(minutes){focusTimerRemaining=Math.round(minutes*60);focusTimerRunning=true;clearInterval(focusTimerInterval);renderFocusTimer();focusTimerInterval=setInterval(()=>{if(!focusTimerRunning)return;focusTimerRemaining--;renderFocusTimer();if(focusTimerRemaining<=0){clearInterval(focusTimerInterval);focusTimerRunning=false;}},1000);}
+function pauseFocusTimer(){focusTimerRunning=!focusTimerRunning;}
+function resetFocusTimer(){clearInterval(focusTimerInterval);focusTimerInterval=null;focusTimerRemaining=0;focusTimerRunning=false;renderFocusTimer();}
+function renderFocusTimer(){const el=document.getElementById('focusTimer');if(!el)return;const s=Math.max(0,focusTimerRemaining),m=Math.floor(s/60),sec=s%60;el.textContent=String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');}
+function renderReentry(){
+  const el=document.getElementById('reentryBox');if(!el)return;
+  const f=state.focus||{},has=f.active&&f.day===state.day&&(f.step||0)<focusTasks().length;
+  const label=has?'You have a Focus Sprint in progress at step '+((f.step||0)+1)+'.':(state.resume?.label||'You are ready to begin today.');
+  el.innerHTML='<div class="spread"><div><strong>Easy re-entry</strong><div class="small muted">'+escapeHtml(label)+'</div></div><button class="secondary" onclick="continueResume()">'+(has?'Resume sprint':'Continue')+'</button></div>';
+}
+function continueResume(){
+  if(state.focus?.active&&state.focus.day===state.day){showView('today',false);startFocusSprint(true);return;}
+  const r=state.resume||{view:'today'};showView(r.view||'today',false);
+  if(r.target)setTimeout(()=>document.getElementById(r.target)?.scrollIntoView({behavior:state.settings.reducedMotion?'auto':'smooth',block:'start'}),70);
+}
+
+/* Accessibility controls */
+function applyAccessibilitySettings(){
+  ensureV3State();const s=state.settings;
+  document.documentElement.dataset.theme=s.theme||'calm';
+  document.documentElement.dataset.reducedMotion=s.reducedMotion?'true':'false';
+  document.documentElement.dataset.contrast=s.contrast||'normal';
+  document.documentElement.dataset.spacing=s.spacing||'normal';
+  document.documentElement.style.setProperty('--font-scale',String(s.fontScale||1));
+  document.body.classList.toggle('low-stim',!!s.lowStim);
+  const xp=document.getElementById('statXP')?.closest('.stat');if(xp)xp.style.display=s.showXP===false?'none':'';
+}
+function setFontScale(v){state.settings.fontScale=Number(v);applyAccessibilitySettings();saveLocal();}
+function setSpacing(v){state.settings.spacing=v;applyAccessibilitySettings();saveLocal();}
+function setReducedMotion(v){state.settings.reducedMotion=!!v;applyAccessibilitySettings();saveLocal();}
+function setContrast(v){state.settings.contrast=v;applyAccessibilitySettings();saveLocal();}
+function setLowStim(v){state.settings.lowStim=!!v;applyAccessibilitySettings();saveLocal();}
+function setGentleMomentum(v){state.settings.gentleMomentum=!!v;saveLocal();renderStats();}
+function setShowXP(v){state.settings.showXP=!!v;applyAccessibilitySettings();saveLocal();}
+
+/* Adaptive coach */
+function coachRecommendation(){
+  const due=dueCards(9999).length,[weak,score]=weakestDomain();
+  if(due>=12)return {domain:'review',title:'Start with Review',reason:due+' cards are due. Clearing a short review set will reduce cognitive load before new material.',view:'review'};
+  if(weak==='listening')return {domain:weak,title:'Train listening',reason:'Listening is your lowest recent domain at about '+score+'%. Use the three-speed listening lab.',view:'practice',target:'labListeningInput'};
+  if(weak==='pronunciation')return {domain:weak,title:'Do one pronunciation module',reason:'Recognized-word pronunciation practice is currently the weakest measured area.',view:'practice',target:'pronModuleSelect'};
+  if(weak==='production')return {domain:weak,title:'Practice Meaning → French',reason:'Your production score trails recognition. Use adaptive review and favor Meaning → French cards.',view:'review'};
+  if(weak==='grammar')return {domain:weak,title:'Produce one grammar sentence',reason:'Grammar production needs the most support right now.',view:'today',target:'grammarCard'};
+  if(weak==='reading')return {domain:weak,title:'Do the mini reading',reason:'Reading is currently the weakest tracked domain.',view:'today',target:'readingCard'};
+  if(weak==='speaking')return {domain:weak,title:'Do one conversation branch',reason:'Speaking needs more recent retrieval practice.',view:'practice',target:'scenarioSelect'};
+  return {domain:'today',title:'Continue today’s lesson',reason:'Your profile is fairly balanced. Keep moving through the current unit.',view:'today'};
+}
+function renderAdaptiveCoach(){
+  const el=document.getElementById('adaptiveCoachText');if(!el)return;
+  const r=coachRecommendation();el.innerHTML='<strong>'+escapeHtml(r.title)+'</strong><p class="small" style="margin-bottom:0">'+escapeHtml(r.reason)+'</p>';
+}
+function followCoachRecommendation(){
+  const r=coachRecommendation();showView(r.view,false);
+  if(r.target)setTimeout(()=>document.getElementById(r.target)?.scrollIntoView({behavior:state.settings.reducedMotion?'auto':'smooth',block:'center'}),80);
+}
+function renderSkillProfile(){
+  const el=document.getElementById('skillProfile');if(!el)return;const s=skillSnapshot();
+  el.innerHTML=V3_DOMAINS.map(k=>{const v=s[k];return '<div class="skillbar"><div class="spread"><strong>'+domainLabel(k)+'</strong><span>'+(v==null?'Not enough data':v+'%')+'</span></div><div class="progress"><div style="width:'+(v==null?0:v)+'%"></div></div></div>';}).join('');
+}
+
+/* Objective wrappers feed the skill model. */
+const V21_answerQuiz=answerQuiz;
+answerQuiz=function(btn,o){const correct=o===currentQuiz.answer;V21_answerQuiz(btn,o);recordSkill('vocabulary',correct?100:0,'Quick quiz');saveLocal();renderProgress();};
+const V21_saveGrammarProduction=saveGrammarProduction;
+saveGrammarProduction=function(){
+  const t=document.getElementById('grammarProduction').value.trim();V21_saveGrammarProduction();
+  const words=wordTokens(t).length;recordSkill('grammar',words>=6?88:words>=3?72:words?50:0,'Grammar production');saveLocal();renderProgress();
+};
+const V21_saveReading=saveReading;
+saveReading=function(){const t=document.getElementById('readingAnswer').value.trim();V21_saveReading();recordSkill('reading',wordTokens(t).length>=5?78:wordTokens(t).length?60:0,'Reading response');saveLocal();renderProgress();};
+const V21_checkRapid=checkRapid;
+checkRapid=function(){const before=rapidTarget?similarity(document.getElementById('rapidAnswer').value,rapidTarget[0]):0;V21_checkRapid();recordSkill('production',before*100,'Rapid translation');saveLocal();renderProgress();};
+startFreeSpeech=function(){
+  const el=document.getElementById('freeSpeechFeedback');el.textContent='Listening…';
+  recognizeFrench((heard,err)=>{
+    if(err){el.textContent=err;return;}
+    const words=wordTokens(heard).length,score=Math.min(100,45+words*5);
+    el.innerHTML='I heard: <strong>'+escapeHtml(heard)+'</strong>.<br>This confirms recognized French words; it does not grade accent quality.';
+    recordSkill('speaking',score,'Free speech');state.xp+=3;saveLocal();renderProgress();
+  });
+};
+
+/* CEFR-style milestone assessments */
+let cefrSession=null;
+function assessmentUnlocked(day){return state.day>=day||state.completedDays.some(d=>d>=day);}
+function recommendedAssessmentDay(){
+  const completed=state.completedDays.length;let rec=30;
+  MILESTONES.forEach(m=>{if(completed>=m[0]-6)rec=m[0];});return rec;
+}
+function assessmentPoolFor(day){
+  const maxUnit=Math.min(29,Math.max(0,Math.ceil(day/6)-1)),units=UNITS.slice(0,maxUnit+1),cards=[];
+  units.forEach((u,ui)=>u.vocab.forEach((v,vi)=>cards.push({front:v[0],back:v[1],ui,vi})));
+  return {units,cards};
+}
+function buildAssessment(day){
+  const {units,cards}=assessmentPoolFor(day),qs=[],pick=shuffle(cards.slice()).slice(0,12);
+  for(let i=0;i<3;i++){
+    const q=pick[i],wrong=shuffle(cards.filter(x=>x.back!==q.back)).slice(0,3).map(x=>x.back);
+    qs.push({type:'mc',domain:'vocabulary',prompt:'What does “'+q.front+'” mean?',expected:q.back,options:shuffle([q.back,...wrong])});
+  }
+  for(let i=3;i<6;i++){const q=pick[i];qs.push({type:'input',domain:'production',prompt:'Write this in French: '+q.back,expected:q.front});}
+  const phraseUnits=shuffle(units.slice()).slice(0,2);
+  phraseUnits.forEach(u=>{const ph=u.phrases[Math.floor(Math.random()*u.phrases.length)][0];qs.push({type:'audio',domain:'listening',prompt:'Type exactly what you hear.',expected:ph,audio:ph});});
+  const readU=units[Math.max(0,units.length-1)],readText=readingForAssessment(readU);
+  const themeOptions=shuffle([readU.theme,...shuffle(UNITS.filter(x=>x.theme!==readU.theme)).slice(0,3).map(x=>x.theme)]);
+  qs.push({type:'reading',domain:'reading',prompt:'Which topic best matches this passage?',passage:readText,expected:readU.theme,options:themeOptions});
+  const gramU=units[Math.floor(Math.random()*units.length)];
+  qs.push({type:'grammar',domain:'grammar',prompt:'Write one complete French sentence using this pattern: '+gramU.grammar_title,expected:gramU.examples[0],open:true});
+  const speakU=units[Math.floor(Math.random()*units.length)],sp=speakU.phrases[0][0];
+  qs.push({type:'speech',domain:'speaking',prompt:'Say this sentence aloud:',expected:sp,audio:sp});
+  const prodPhrase=units[Math.floor(Math.random()*units.length)].phrases[1];
+  qs.push({type:'input',domain:'production',prompt:'Write this in French: '+prodPhrase[1],expected:prodPhrase[0]});
+  return shuffle(qs).slice(0,12);
+}
+function readingForAssessment(u){return u.examples.join(' ')+' '+u.phrases[0][0]+' '+u.phrases[2][0];}
+function startCefrAssessment(day){
+  if(!assessmentUnlocked(day)){alert('This checkpoint unlocks later in the course.');return;}
+  cefrSession={day,questions:buildAssessment(day),index:0,score:0,domainScores:{},answers:[]};renderCefrQuestion();
+}
+function renderCefrQuestion(){
+  const area=document.getElementById('assessmentArea'),pill=document.getElementById('assessmentProgressPill');if(!cefrSession)return;
+  if(cefrSession.index>=cefrSession.questions.length){finishCefrAssessment();return;}
+  const q=cefrSession.questions[cefrSession.index];pill.textContent=(cefrSession.index+1)+' / '+cefrSession.questions.length;
+  let h='<div class="assessment-q"><div class="assessment-domain">'+escapeHtml(domainLabel(q.domain))+'</div>';
+  if(q.passage)h+='<div class="reading" style="margin:10px 0">'+escapeHtml(q.passage)+'</div>';
+  h+='<p><strong>'+escapeHtml(q.prompt)+'</strong></p>';
+  if(q.type==='audio')h+='<button onclick="speakTextAtRate('+JSON.stringify(q.audio)+',.85)">▶ Play audio</button><input id="cefrInput" style="margin-top:10px" placeholder="Type what you hear"><button style="margin-top:10px" onclick="submitCefrInput()">Check</button>';
+  else if(q.type==='input')h+='<input id="cefrInput" placeholder="Type in French"><button style="margin-top:10px" onclick="submitCefrInput()">Check</button>';
+  else if(q.type==='grammar')h+='<input id="cefrInput" placeholder="Write a complete French sentence"><button style="margin-top:10px" onclick="submitCefrOpenGrammar()">Submit</button><p class="small muted">Open production is scored for completing the requested structure, not exact wording.</p>';
+  else if(q.type==='speech')h+='<div class="row"><button onclick="speakText('+JSON.stringify(q.expected)+')">Hear target</button><button class="secondary" onclick="submitCefrSpeech()">🎙 Say it</button></div><div id="cefrSpeechFeedback" class="small" style="margin-top:8px"></div>';
+  else h+=q.options.map(o=>'<button class="quiz-option" onclick="submitCefrChoice('+JSON.stringify(o)+')">'+escapeHtml(o)+'</button>').join('');
+  h+='</div>';area.innerHTML=h;
+}
+function saveAssessmentScore(q,score,answer){
+  score=Math.max(0,Math.min(100,score));cefrSession.score+=score;
+  (cefrSession.domainScores[q.domain]??=[]).push(score);cefrSession.answers.push({domain:q.domain,score,answer,expected:q.expected});
+  recordSkill(q.domain,score,'CEFR-style assessment');
+}
+function assessmentNext(){cefrSession.index++;saveLocal();renderCefrQuestion();}
+function submitCefrChoice(o){const q=cefrSession.questions[cefrSession.index],score=o===q.expected?100:0;saveAssessmentScore(q,score,o);if(!score)logMistake('checkpoint',q.prompt,q.expected,o,'CEFR-style assessment');assessmentNext();}
+function submitCefrInput(){const q=cefrSession.questions[cefrSession.index],a=document.getElementById('cefrInput').value,s=similarity(a,q.expected);saveAssessmentScore(q,s*100,a);if(s<.82)logMistake(q.domain==='listening'?'dictation':'rapid-translation',q.prompt,q.expected,a,'CEFR-style assessment');assessmentNext();}
+function submitCefrOpenGrammar(){const q=cefrSession.questions[cefrSession.index],a=document.getElementById('cefrInput').value,w=wordTokens(a).length,score=w>=6?85:w>=3?68:w?40:0;saveAssessmentScore(q,score,a);assessmentNext();}
+function submitCefrSpeech(){
+  const q=cefrSession.questions[cefrSession.index],el=document.getElementById('cefrSpeechFeedback');el.textContent='Listening…';
+  recognizeFrench((heard,err)=>{if(err){el.textContent=err;return;}const s=similarity(heard,q.expected);saveAssessmentScore(q,s*100,heard);el.textContent='Recognized: '+heard;setTimeout(assessmentNext,450);});
+}
+function finishCefrAssessment(){
+  const total=cefrSession.questions.length*100,pct=Math.round(cefrSession.score/total*100);
+  const domains={};Object.entries(cefrSession.domainScores).forEach(([k,a])=>domains[k]=Math.round(a.reduce((s,x)=>s+x,0)/a.length));
+  state.cefrAssessments[cefrSession.day]={score:pct,domains,at:new Date().toISOString()};
+  state.xp+=pct>=80?60:pct>=65?35:20;saveLocal();
+  document.getElementById('assessmentProgressPill').textContent='Complete';
+  document.getElementById('assessmentArea').innerHTML='<div class="score">'+pct+'%</div><p>'+(pct>=80?'Strong readiness on this in-app checkpoint.':pct>=65?'Good foundation. Use the domain breakdown to target the next practice.':'Use this as a map: review the weakest domains, then retake when you want.')+'</p>'+Object.entries(domains).map(([k,v])=>'<div class="weak-word"><span>'+domainLabel(k)+'</span><strong>'+v+'%</strong></div>').join('');
+  cefrSession=null;renderAssessments();renderProgress();
+}
+function renderAssessments(){
+  const holder=document.getElementById('assessmentMilestones');if(!holder)return;
+  const rec=recommendedAssessmentDay();document.getElementById('assessmentRecommended').textContent='Recommended: Day '+rec;
+  holder.innerHTML=MILESTONES.map(m=>{
+    const unlocked=assessmentUnlocked(m[0]),r=state.cefrAssessments[m[0]];
+    return '<div class="mission-box"><strong>'+escapeHtml(m[1])+'</strong><span class="small muted">Day '+m[0]+'</span><p class="small">'+escapeHtml(m[2])+'</p>'+(r?'<span class="pill">'+r.score+'% last score</span>':'')+'<button style="margin-top:8px" '+(unlocked?'':'disabled')+' onclick="startCefrAssessment('+m[0]+')">'+(r?'Retake':'Start')+'</button></div>';
+  }).join('');
+  const snap=skillSnapshot();document.getElementById('assessmentReadiness').innerHTML=V3_DOMAINS.map(k=>'<div class="weak-word"><span>'+domainLabel(k)+'</span><strong>'+(snap[k]==null?'—':snap[k]+'%')+'</strong></div>').join('');
+}
+
+/* Render overrides */
+const V21_renderToday=renderToday;
+renderToday=function(){
+  V21_renderToday();
+  const d=currentV3Day();document.getElementById('todaySubtitle').textContent=d.mission+' — '+d.goal;
+  document.getElementById('dailyMissionTitle').textContent=d.title;
+  document.getElementById('dailyLessonNumber').textContent='Day '+d.day+' / 180';
+  document.getElementById('dailyGoal').textContent=d.goal;
+  document.getElementById('dailyRetrieval').textContent=d.retrieval;
+  document.getElementById('dailyListeningMission').textContent=d.listening;
+  document.getElementById('dailyPronMission').textContent=d.pronunciation;
+  const band=adaptiveBand();
+  if(band==='support')document.getElementById('dailyGoal').textContent=d.goal+' Today the deck is intentionally smaller so you can consolidate.';
+  if(band==='stretch'&&unitIndex()<29)document.getElementById('dailyRetrieval').textContent=d.retrieval+' Stretch: preview one phrase from the next unit after the core work.';
+  document.getElementById('readingText').textContent=d.reading;
+  document.getElementById('speakingPrompt').textContent=unit().speaking+' '+d.micro;
+  document.getElementById('listeningTranscript').textContent=d.dictation;
+  document.getElementById('listeningTranscript').classList.add('hidden');
+  document.getElementById('dictationWordDiff').innerHTML='';
+  updateSessionControls();renderReentry();if(state.focus?.active&&state.focus.day===state.day){document.getElementById('focusSprintCard').classList.remove('hidden');renderFocusSprint();}
+};
+const V21_renderStats=renderStats;
+renderStats=function(){
+  V21_renderStats();const gentle=state.settings.gentleMomentum!==false;
+  document.getElementById('statMomentumLabel').textContent=gentle?'7-day momentum':'Streak';
+  document.getElementById('statStreak').textContent=gentle?practiceDaysLast7():state.streak;
+  applyAccessibilitySettings();
+};
+const V21_renderProgress=renderProgress;
+renderProgress=function(){V21_renderProgress();renderAdaptiveCoach();renderSkillProfile();};
+const V21_renderSettings=renderSettings;
+renderSettings=function(){
+  V21_renderSettings();applyAccessibilitySettings();
+  document.getElementById('defaultSessionSelect').value=state.settings.sessionMode||'standard';
+  document.getElementById('fontScaleSelect').value=String(state.settings.fontScale||1);
+  document.getElementById('spacingSelect').value=state.settings.spacing||'normal';
+  document.getElementById('motionSelect').value=state.settings.reducedMotion?'reduce':'normal';
+  document.getElementById('contrastSelect').value=state.settings.contrast||'normal';
+  document.getElementById('stimulationSelect').value=state.settings.lowStim?'low':'standard';
+  document.getElementById('gentleMomentumCheck').checked=state.settings.gentleMomentum!==false;
+  document.getElementById('showXpCheck').checked=state.settings.showXP!==false;
+};
+const V21_renderPractice=renderPractice;
+renderPractice=function(){
+  V21_renderPractice();populatePronunciation();document.getElementById('listeningLabLevel').textContent=unit().cefr;
+  document.getElementById('labListeningInput').value='';document.getElementById('labListeningFeedback').textContent='';document.getElementById('labListeningDiff').innerHTML='';
+  v3Scenario={key:document.getElementById('scenarioSelect').value,node:V3_SCENARIOS[document.getElementById('scenarioSelect').value].start};renderScenario();
+};
+const V21_completeDay=completeDay;
+completeDay=function(){
+  const finished=state.day;state.sessionHistory[finished]={mode:state.settings.sessionMode,energy:state.settings.energy,at:new Date().toISOString()};
+  state.resume={view:'today',target:'sessionDock',label:'Start the next lesson'};state.focus={day:Math.min(180,finished+1),step:0,done:[],skipped:[],active:false};
+  V21_completeDay();
+};
+const V21_renderAll=renderAll;
+renderAll=function(){ensureV3State();V21_renderAll();renderAssessments();applyAccessibilitySettings();};
+
+/* View helper and re-entry tracking */
+function showView(view,store=true){
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.view===view));
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===view));
+  if(view==='review')buildReviewDeck();
+  if(view==='mistakes')renderMistakes();
+  if(view==='practice')renderPractice();
+  if(view==='progress')renderProgress();
+  if(view==='assess')renderAssessments();
+  if(store){state.resume={view,target:null,label:'Return to '+view};saveLocal();}
+  window.scrollTo({top:0,behavior:state.settings.reducedMotion?'auto':'smooth'});
+}
+
+
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');document.getElementById(b.dataset.view).classList.add('active');
+  if(b.dataset.view==='review')buildReviewDeck();
+  if(b.dataset.view==='mistakes')renderMistakes();
+  if(b.dataset.view==='progress')renderProgress();
+}));
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{state.resume={view:b.dataset.view,target:null,label:'Return to '+b.textContent};saveLocal();if(b.dataset.view==='assess')renderAssessments();}));
+document.getElementById('scenarioSelect').addEventListener('change',()=>{scenarioTurn=0;v3Scenario={key:document.getElementById('scenarioSelect').value,node:V3_SCENARIOS[document.getElementById('scenarioSelect').value].start};renderScenario();});
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+window.addEventListener('load',()=>{refreshMicStatus();});
+renderAll();
+</script>
+</body>
+</html>
